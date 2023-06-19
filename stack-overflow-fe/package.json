@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:start": "npm run build && npm run start",
+    "dev:watch": "nodemon -e js,jsx,ts,tsx,json --exec npm run dev:start"
   },
   "dependencies": {
     "eslint": "^8.42.0",
@@ -18,6 +20,7 @@
     "@types/node": "20.3.0",
     "@types/react": "18.2.11",
     "autoprefixer": "^10.4.14",
+    "nodemon": "^2.0.22",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
     "typescript": "5.1.3"
