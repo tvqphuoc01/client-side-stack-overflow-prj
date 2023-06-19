@@ -1,4 +1,17 @@
+"use client"; // This is a client component
+
+import { useState } from "react";
+
 export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    console.log("Email:", email);
+    console.log("Password:", password);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-400 to-green-600">
       <div className="absolute inset-0 flex items-center justify-center">
@@ -9,7 +22,7 @@ export default function SignIn() {
         />
       </div>
 
-      <div className="bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
+      <div className="w-2/5 bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Dummy Logo</h1>
         <h2 className="text-3xl font-bold">Sign in to your account</h2>
         <button className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full">
@@ -25,16 +38,20 @@ export default function SignIn() {
           <span className="text-base font-normal px-2">or</span>
           <hr className="flex-grow border-t border-gray-300" />
         </div>
-        <form className="space-y-4">
+        <form className="space-y-4 w-full" onSubmit={handleSignIn}>
           <input
             type="email"
             placeholder="Email"
             className="w-full rounded border border-gray-300 py-2 px-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
             placeholder="Password"
             className="w-full rounded border border-gray-300 py-2 px-4"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <div className="flex items-center justify-between">
             <label className="flex items-center space-x-2">
@@ -57,7 +74,10 @@ export default function SignIn() {
         </form>
         <div className="flex items-center space-x-2">
           <span className="text-base font-normal">Don't have an account?</span>
-          <button className="text-green-500 text-base font-bold text-green-400">
+          <button
+            className="text-green-500 text-base font-bold text-green-400"
+            onClick={() => (window.location.href = "/sign-up")}
+          >
             Sign up
           </button>
         </div>
