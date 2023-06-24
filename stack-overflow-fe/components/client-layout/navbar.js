@@ -13,8 +13,9 @@ import AdbIcon from "@mui/icons-material/Adb";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useRouter } from 'next/router';
 
-const pages = ["Homepage", "Questions", "Ranking"];
+const pages = [{title: "Home page", link: '/'}, {title: "Questions", link: '/questions'}, {title: "Ranking", link: '/ranking'}];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
@@ -36,17 +37,20 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const { asPath } = useRouter();
+
   return (
     <AppBar position="static" className="bg-white">
       <Container maxWidth="xl" className="px-16 items-center">
         <Toolbar disableGutters className="h-auto">
-          <h1
-            className="text-4xl font-bold"
+          <a
+            className="text-xl font-extrabold"
             style={{ paddingBottom: "6px", "background": "-webkit-linear-gradient(#82D200, #59AD00)", "-webkit-background-clip": "text",
             "-webkit-text-fill-color": "transparent" }}
+            href="/"
           >
             Dummy Logo
-          </h1>
+          </a>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -77,9 +81,9 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page.title} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center" sx={{ color: "#00adb5" }}>
-                    {page}
+                    {page.title}
                   </Typography>
                 </MenuItem>
               ))}
@@ -111,18 +115,18 @@ function ResponsiveAppBar() {
           >
             {pages.map((page) => (
               <div
-                key={page}
+                key={page.title}
                 onClick={handleCloseNavMenu}
                 style={{
                   paddingLeft: 16,
                   paddingRight: 16,
                   color: "#434343",
-                  borderBottomWidth: "4px",
-                  borderColor: "#82D200",
+                  borderBottomWidth: asPath == page.link ? "2px" : "0",
+                  borderColor: asPath == page.link ? "#82D200" : "",
                 }}
                 className="border-b-4 flex flex-col justify-center text-base font-bold"
               >
-                <div>{page}</div>
+                <a href={page.link}>{page.title}</a>
               </div>
             ))}
           </Box>

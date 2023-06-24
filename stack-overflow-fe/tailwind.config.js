@@ -7,7 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {},
+      fontFamily: {
+        'sans': ['Proxima Nova', 'Helvetica', 'Arial', 'sans-serif']
+      }
     },
     plugins: [],
   },
