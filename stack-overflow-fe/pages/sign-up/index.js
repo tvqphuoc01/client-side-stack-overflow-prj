@@ -1,6 +1,12 @@
 "use client"; // This is a client component
 
+import useAxios from "axios-hooks";
 import { useState } from "react";
+import client from "../../configs/axios.config";
+
+const AuthenticateResponse = {
+  message: String
+}
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -9,15 +15,18 @@ export default function SignUp() {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Repeat Password:", repeatPassword);
     //Check the password and repeat password are the same, if not, show an error message
     if (password !== repeatPassword) {
       setErrorMessage("Password and repeat password do not match.");
+    } else {
+      const result = await client.auth.post("/api/create-user/", {
+        full_name: name,
+        email: email,
+        password: password
+      });
+      console.log("result", result);
     }
   };
 
@@ -111,7 +120,7 @@ export default function SignUp() {
             Already have an account?
           </span>
           <button
-            className="text-green-500 text-base font-bold text-green-400"
+            className="text-base font-bold text-green-400"
             onClick={() => (window.location.href = "/sign-in")}
           >
             Sign in
