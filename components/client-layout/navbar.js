@@ -7,9 +7,7 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -41,18 +39,23 @@ function ResponsiveAppBar() {
 
   return (
     <AppBar position="static" className="bg-white">
-      <Container maxWidth="xl" className="px-16 items-center">
+      <Container maxWidth="xl" className="md:px-16 items-center">
         <Toolbar disableGutters className="h-auto">
-          <a
-            className="text-xl font-extrabold"
-            style={{
-              paddingBottom: "6px", "background": "-webkit-linear-gradient(#82D200, #59AD00)", "-webkit-background-clip": "text",
-              "-webkit-text-fill-color": "transparent"
-            }}
+          <Typography
+            noWrap
+            component="a"
             href="/"
+            sx={{
+              display: { md: "flex", xs: "none" },
+              fontSize: "28px",
+              fontWeight: "700",
+              background: "-webkit-linear-gradient(#82D200, #59AD00)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}
           >
-            Dummy Logo
-          </a>
+            Dump Logo
+          </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -60,7 +63,7 @@ function ResponsiveAppBar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+              color="black"
             >
               <MenuIcon />
             </IconButton>
@@ -84,31 +87,26 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page.title} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" sx={{ color: "#00adb5" }}>
-                    {page.title}
-                  </Typography>
+                  <a href={page.link}>{page.title}</a>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
-            variant="h5"
             noWrap
             component="a"
-            href=""
+            href="/"
             sx={{
-              mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              fontSize: "28px",
+              fontWeight: "700",
+              background: "-webkit-linear-gradient(#82D200, #59AD00)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
             }}
           >
-            LOGO
+            Dump Logo
           </Typography>
           <Box
             sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
