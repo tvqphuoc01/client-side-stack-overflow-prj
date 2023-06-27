@@ -15,7 +15,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useRouter } from 'next/router';
 
-const pages = [{title: "Home page", link: '/'}, {title: "Questions", link: '/questions'}, {title: "Ranking", link: '/ranking'}];
+const pages = [{ title: "Home page", link: '/' }, { title: "Questions", link: '/questions' }, { title: "Ranking", link: '/contributor' }];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
@@ -45,8 +45,10 @@ function ResponsiveAppBar() {
         <Toolbar disableGutters className="h-auto">
           <a
             className="text-xl font-extrabold"
-            style={{ paddingBottom: "6px", "background": "-webkit-linear-gradient(#82D200, #59AD00)", "-webkit-background-clip": "text",
-            "-webkit-text-fill-color": "transparent" }}
+            style={{
+              paddingBottom: "6px", "background": "-webkit-linear-gradient(#82D200, #59AD00)", "-webkit-background-clip": "text",
+              "-webkit-text-fill-color": "transparent"
+            }}
             href="/"
           >
             Dummy Logo
