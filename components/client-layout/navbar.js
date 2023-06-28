@@ -19,6 +19,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUNotification, setAnchorElUNotification] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -33,6 +34,10 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleOpenNotification = (event) => {
+    setAnchorElUNotification(event.currentTarget);
   };
 
   const { asPath } = useRouter();
@@ -132,10 +137,52 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }} className="flex flex-row gap-x-5">
-            <IconButton>
-              <NotificationsIcon />
+            <IconButton
+              aria-controls="menu-notify"
+              aria-haspopup="true"
+              onClick={handleOpenNotification}
+            >
+              <NotificationsIcon style={{ color: Boolean(anchorElUNotification) ? "#82D200" : "" }} />
             </IconButton>
-            <IconButton>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-notify"
+              anchorEl={anchorElUNotification}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUNotification)}
+              onClose={() => {
+                setAnchorElUNotification(null);
+              }}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting}
+
+                  onClick={() => {
+                    setAnchorElUNotification(null);
+                  }}>
+                  <div className="flex flex-row gap-x-3" style={{ maxWidth: "350px", maxHeight: "74px" }} >
+                    <img src="/chatbubble.svg" alt="Comment" className="w-7 h-7" />
+                    <div className="flex flex-col" style={{ maxWidth: "318px" }} >
+                      <div style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+
+                      }}>Abccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc</div>
+                      <div style={{ fontWeight: 400, fontSize: 12 }}>May 28, 2023 at 16:39 </div>
+                    </div>
+                  </div>
+                </MenuItem>
+              ))}
+            </Menu>
+            <IconButton href="/profile">
               <AccountCircleIcon />
             </IconButton>
             <IconButton>
