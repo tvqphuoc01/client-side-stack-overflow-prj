@@ -9,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import Badge from "@mui/material/Badge";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
@@ -18,7 +19,7 @@ import { useEffect } from "react";
 import { hasCookie, deleteCookie } from "cookies-next";
 
 const pages = [
-  { title: "Home page", link: "/" },
+  { title: "Homepage", link: "/" },
   { title: "Questions", link: "/questions" },
   { title: "Contributor", link: "/contributor" },
 ];
@@ -162,11 +163,13 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNotification}
             >
-              <NotificationsIcon
-                style={{
-                  color: Boolean(anchorElUNotification) ? "#82D200" : "",
-                }}
-              />
+              <Badge color="error" badgeContent={3}>
+                <NotificationsIcon
+                  style={{
+                    color: Boolean(anchorElUNotification) ? "#82D200" : "",
+                  }}
+                />
+              </Badge>
             </IconButton>
             <Menu
               sx={{ mt: "45px" }}
