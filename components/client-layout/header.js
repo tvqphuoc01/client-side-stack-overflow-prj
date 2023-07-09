@@ -9,17 +9,37 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { useRouter } from 'next/router';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
+import { useRouter } from "next/router";
 
-const pages = [{ title: "Home page", link: '/' }, { title: "Questions", link: '/questions' }, { title: "Ranking", link: '/contributor' }];
+import { useEffect } from "react";
+import { hasCookie, deleteCookie } from "cookies-next";
+
+const pages = [
+  { title: "Home page", link: "/" },
+  { title: "Questions", link: "/questions" },
+  { title: "Contributor", link: "/contributor" },
+];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
+  const [hasUserUUID, setHasUserUUID] = React.useState(false);
+
+  useEffect(() => {
+    setHasUserUUID(hasCookie("user_uuid"));
+  }, []);
+
+  const handleLogout = () => {
+    deleteCookie("user_uuid");
+    window.location.reload();
+  };
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [anchorElUNotification, setAnchorElUNotification] = React.useState(null);
+  const [anchorElUNotification, setAnchorElUNotification] =
+    React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -56,10 +76,10 @@ function ResponsiveAppBar() {
               fontWeight: "700",
               background: "-webkit-linear-gradient(#82D200, #59AD00)",
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent"
+              WebkitTextFillColor: "transparent",
             }}
           >
-            Dump Logo
+            Stack Overflow
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -108,10 +128,10 @@ function ResponsiveAppBar() {
               fontWeight: "700",
               background: "-webkit-linear-gradient(#82D200, #59AD00)",
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent"
+              WebkitTextFillColor: "transparent",
             }}
           >
-            Dump Logo
+            Stack Overflow
           </Typography>
           <Box
             sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
@@ -142,7 +162,11 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNotification}
             >
-              <NotificationsIcon style={{ color: Boolean(anchorElUNotification) ? "#82D200" : "" }} />
+              <NotificationsIcon
+                style={{
+                  color: Boolean(anchorElUNotification) ? "#82D200" : "",
+                }}
+              />
             </IconButton>
             <Menu
               sx={{ mt: "45px" }}
@@ -163,32 +187,58 @@ function ResponsiveAppBar() {
               }}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting}
-
+                <MenuItem
+                  key={setting}
                   onClick={() => {
                     setAnchorElUNotification(null);
-                  }}>
-                  <div className="flex flex-row gap-x-3" style={{ maxWidth: "350px", maxHeight: "74px" }} >
-                    <img src="/chatbubble.svg" alt="Comment" className="w-7 h-7" />
-                    <div className="flex flex-col" style={{ maxWidth: "318px" }} >
-                      <div style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-
-                      }}>Abccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc</div>
-                      <div style={{ fontWeight: 400, fontSize: 12 }}>May 28, 2023 at 16:39 </div>
+                  }}
+                >
+                  <div
+                    className="flex flex-row gap-x-3"
+                    style={{ maxWidth: "350px", maxHeight: "74px" }}
+                  >
+                    <img
+                      src="/chatbubble.svg"
+                      alt="Comment"
+                      className="w-7 h-7"
+                    />
+                    <div
+                      className="flex flex-col"
+                      style={{ maxWidth: "318px" }}
+                    >
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        Abccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                      </div>
+                      <div style={{ fontWeight: 400, fontSize: 12 }}>
+                        May 28, 2023 at 16:39{" "}
+                      </div>
                     </div>
                   </div>
                 </MenuItem>
               ))}
             </Menu>
-            <IconButton href="/profile">
-              <AccountCircleIcon />
-            </IconButton>
-            <IconButton>
-              <LogoutIcon />
-            </IconButton>
-            <Menu
+
+            {hasUserUUID ? (
+              <>
+                <IconButton href="/profile">
+                  <AccountCircleIcon />
+                </IconButton>
+                <IconButton onClick={handleLogout}>
+                  <LogoutIcon />
+                </IconButton>
+              </>
+            ) : (
+              <IconButton href="/sign-in">
+                <LoginIcon />
+              </IconButton>
+            )}
+
+            {/* <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -209,7 +259,7 @@ function ResponsiveAppBar() {
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-            </Menu>
+            </Menu> */}
           </Box>
         </Toolbar>
       </Container>
