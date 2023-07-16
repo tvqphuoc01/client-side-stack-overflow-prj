@@ -3,11 +3,9 @@ import Layout from "../../components/admin-layout/layout";
 
 // This is a client component
 
-export default function Admin() {
+export default function Admin({ window, children }) {
+
   return (
-    <div>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
+    <Layout><main >{children}</main></Layout >
   );
 }
-Admin.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
-};
