@@ -11,7 +11,6 @@ export default function SignIn() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    console.log("hasCookie", hasCookie("user_uuid"));
     if (hasCookie("user_uuid")) {
       window.location.href = "/";
     }
