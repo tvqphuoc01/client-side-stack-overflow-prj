@@ -16,7 +16,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import { useRouter } from "next/router";
 
 import { useEffect } from "react";
-import { hasCookie, deleteCookie } from "cookies-next";
+import { hasCookie, deleteCookie, getCookie } from "cookies-next";
 
 const pages = [
   { title: "Homepage", link: "/" },
@@ -26,10 +26,10 @@ const pages = [
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
-  const [hasUserUUID, setHasUserUUID] = React.useState(false);
+  const [userUUID, setUserUUID] = React.useState();
 
   useEffect(() => {
-    setHasUserUUID(hasCookie("user_uuid"));
+    setUserUUID(getCookie("user_uuid"));
   }, []);
 
   const handleLogout = () => {
@@ -226,9 +226,9 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
 
-            {hasUserUUID ? (
+            {userUUID ? (
               <>
-                <IconButton href="/profile">
+                <IconButton href={`/profile/${userUUID}`}>
                   <AccountCircleIcon />
                 </IconButton>
                 <IconButton onClick={handleLogout}>

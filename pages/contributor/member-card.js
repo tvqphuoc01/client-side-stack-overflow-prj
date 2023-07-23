@@ -32,7 +32,9 @@ export default function MemberCard({ index, item }) {
               src={item.user.image_url}
               className="rounded-full object-fill w-1/5"
             />
-            <div className="text-2xl">{item.user.full_name}</div>
+            <a href={`/profile/${item.user.id}`} className="text-2xl">
+              {item.user.full_name}
+            </a>
           </div>
           <div className="flex flex-row gap-8">
             <div className="flex flex-row gap-x-5">

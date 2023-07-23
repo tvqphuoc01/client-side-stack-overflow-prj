@@ -1,43 +1,56 @@
 "use client";
 import { Button, Divider, TextField, Typography } from "@mui/material";
 import Layout from "../../components/client-layout/layout";
-import QuestionCard from "./question-card";
+// import QuestionCard from "./question-card";
+import QuestionCard from "../../components/client-layout/card-item/card-question";
 import { useEffect, useState } from "react";
-// import { get } from "http";
 
-import { getCookie } from "cookies-next";
 import client from "../../configs/axios.config";
-import { get } from "http";
 
 export default function Profile() {
   const [tag, setTag] = useState("question");
-
-  const user_uuid = getCookie("user_uuid");
   const [user, setUser] = useState({});
+  const [question, setQuestion] = useState([]);
+
+  const [userUUID, setUserUUID] = useState();
 
   useEffect(() => {
-    console.log("user_uuid", user_uuid);
+    const pathArray = window.location.pathname.split("/");
+    console.log("user_uuid: ", pathArray);
+    setUserUUID(pathArray[pathArray.length - 1]);
 
-    if (!user_uuid) {
-      window.location.href = "/login";
-    }
+    console.log("userUUID: ", userUUID);
 
     getUser();
-  }, []);
+    getQuestion();
+  }, [userUUID]);
 
   async function getUser() {
     try {
       const res = await client.auth.get(
-        `http://localhost:8006/api/get-user-by-id?user_id=${user_uuid}`
+        `http://localhost:8006/api/get-user-by-id?user_id=${userUUID}`
       );
       const data = await res.data.data;
-      console.log("data", data);
       setUser({
         name: data.full_name,
         email: data.email,
         point: data.user_points,
         avatar: data.image_url,
       });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getQuestion() {
+    try {
+      const res = await client.auth.get(
+        `http://localhost:8009/api/get-question-by-user-id?user_id=${userUUID}`
+      );
+      const data = await res.data.data;
+
+      setQuestion(data);
+      console.log(question);
     } catch (err) {
       console.log(err);
     }
@@ -164,7 +177,7 @@ export default function Profile() {
             <span className="pr-1">Question</span>
             <p>({23})</p>
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
             style={{
               color: tag === "answer" ? "#FFFFFF" : "black",
@@ -183,12 +196,28 @@ export default function Profile() {
           >
             <span className="pr-1">Answer</span>
             <p>({23})</p>
-          </Button>
+          </Button> */}
         </div>
         <div className="mt-10">
-          <QuestionCard />
-          <QuestionCard />
-          <QuestionCard />
+          {question.length > 0 ? (
+            question.map((item, index) => (
+              <QuestionCard
+                key={index}
+                title={item.title}
+                content={item.content}
+                number_of_like={item.number_of_like}
+                number_of_dislike={item.number_of_dislike}
+                number_of_answer={item.number_of_answer}
+                created_date={item.create_date}
+                tag_list={item.question_tag_list}
+              />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center">
+              <img src="/empty-state.png" className="w-1/2" />
+              <p className="text-2xl font-bold text-gray-500"> No question </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

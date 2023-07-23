@@ -8,7 +8,7 @@ export default function QuestionCard({
   number_of_like,
   number_of_dislike,
   number_of_answer,
-  create_date,
+  created_date,
   tag_list,
 }) {
   return (
@@ -76,16 +76,17 @@ export default function QuestionCard({
         {content}
       </p>
       <div className="flex flex-wrap py-6 space-x-2">
-        {tag_list.map((tag, index) => (
-          <a
-            key={index}
-            rel="noopener noreferrer"
-            href="#"
-            className="px-3 py-1 rounded-xl hover:underline bg-gray-200 text-gray-900"
-          >
-            {tag}
-          </a>
-        ))}
+        {tag_list &&
+          tag_list.map((tag, index) => (
+            <a
+              key={index}
+              rel="noopener noreferrer"
+              href="#"
+              className="px-3 py-1 rounded-xl hover:underline bg-gray-200 text-gray-900"
+            >
+              {tag}
+            </a>
+          ))}
       </div>
       <div className="flex justify-between items-center my-4">
         <div className="flex flex-col items-start justify-end w-full md:flex-row md:items-center text-gray-400">
@@ -102,7 +103,7 @@ export default function QuestionCard({
           <div className="flex items-center justify-end md:justify-start md:space-x-2">
             <p className="text-sm text-gray-500 font-medium pl-1">
               {" | "}
-              {create_date}
+              {created_date}
             </p>
           </div>
         </div>
