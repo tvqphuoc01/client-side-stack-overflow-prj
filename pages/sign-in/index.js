@@ -4,17 +4,45 @@ import { useState } from "react";
 import client from "../../configs/axios.config";
 import { useEffect } from "react";
 import { hasCookie, setCookie } from "cookies-next";
+import { signIn } from "next-auth/react"
+import { useSession } from "next-auth/react"
+import Randomstring from "randomstring";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const { data: session, status } = useSession()
 
   useEffect(() => {
     if (hasCookie("user_uuid")) {
-      window.location.href = "/";
+      window.location.href = "/home";
     }
   }, []);
+
+  useEffect(() => {
+    console.log(status);
+    console.log(hasCookie("user_uuid"))
+    if (status == "authenticated" && !hasCookie("user_uuid"))
+      client.auth.post(
+        "http://localhost:8006/api/create-user",
+        {
+          full_name: session.user.name,
+          email: session.user.email,
+          password: Randomstring.generate(),
+          image_url: session.user.image,
+          method: "google"
+        }
+      ).then((res) => {
+        setCookie("user_uuid", res.data.user_id);
+        window.location.href = "/home";
+      }).catch((err) => {
+        console.log("error", err.response.data.message);
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 5000);
+      })
+  }, [status])
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -27,7 +55,7 @@ export default function SignIn() {
         }
       );
       setCookie("user_uuid", result.data.user_data.id);
-      window.location.href = "/";
+      window.location.href = "/home";
     } catch (error) {
       console.log("error", error.response.data.message);
       switch (error.response.data.message) {
@@ -82,7 +110,7 @@ export default function SignIn() {
       <div className="w-2/5 w-full max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Stack Overflow</h1>
         <h2 className="text-3xl font-bold">Sign in to your account</h2>
-        <button className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full">
+        <button className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full" onClick={() => signIn('google')}>
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
             alt="Google Logo"
