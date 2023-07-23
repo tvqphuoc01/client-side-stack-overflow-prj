@@ -38,7 +38,7 @@ export default function Layout({ window, children }) {
               <Typography
                 noWrap
                 component="a"
-                href="/"
+                href="/home"
                 sx={{
                   fontSize: "28px",
                   fontWeight: "700",

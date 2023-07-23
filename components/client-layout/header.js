@@ -14,12 +14,13 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
 
 import { useEffect } from "react";
 import { hasCookie, deleteCookie, getCookie } from "cookies-next";
 
 const pages = [
-  { title: "Homepage", link: "/" },
+  { title: "Homepage", link: "/home" },
   { title: "Questions", link: "/questions" },
   { title: "Contributor", link: "/contributor" },
 ];
@@ -32,7 +33,8 @@ function ResponsiveAppBar() {
     setUserUUID(getCookie("user_uuid"));
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     deleteCookie("user_uuid");
     window.location.reload();
   };
@@ -70,7 +72,7 @@ function ResponsiveAppBar() {
           <Typography
             noWrap
             component="a"
-            href="/"
+            href="/home"
             sx={{
               display: { md: "flex", xs: "none" },
               fontSize: "28px",
@@ -121,7 +123,7 @@ function ResponsiveAppBar() {
           <Typography
             noWrap
             component="a"
-            href="/"
+            href="/home"
             sx={{
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
