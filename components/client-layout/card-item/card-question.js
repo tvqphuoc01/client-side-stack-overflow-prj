@@ -1,13 +1,13 @@
 "use client"; // This is a client component
 
 export default function QuestionCard({
+  id,
   user_avatar,
   user_name,
   title,
   content,
   number_of_like,
   number_of_dislike,
-  number_of_answer,
   created_date,
   tag_list,
 }) {
@@ -48,7 +48,7 @@ export default function QuestionCard({
           </svg>
           {number_of_dislike}
         </button>
-        <button className="inline-flex items-center px-1 -ml-1 flex-column">
+        {/* <button className="inline-flex items-center px-1 -ml-1 flex-column">
           <svg
             className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
             xmlns="http://www.w3.org/2000/svg"
@@ -64,16 +64,16 @@ export default function QuestionCard({
             />
           </svg>
           {number_of_answer} Answers
-        </button>
+        </button> */}
       </div>
       <a
         className="text-lg text-green-500 font-bold hover:underline"
-        href="/questions/1"
+        href={`questions/${id}`}
       >
         {title}
       </a>
       <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
-        {content}
+        {content.substring(0, 200)} {" ..."}
       </p>
       <div className="flex flex-wrap py-6 space-x-2">
         {tag_list &&
