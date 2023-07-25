@@ -4,31 +4,28 @@ import Layout from "../../components/client-layout/layout";
 // import QuestionCard from "./question-card";
 import QuestionCard from "../../components/client-layout/card-item/card-question";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import client from "../../configs/axios.config";
 
 export default function Profile() {
+  const router = useRouter();
+  const { id } = router.query;
+
   const [tag, setTag] = useState("question");
   const [user, setUser] = useState({});
   const [question, setQuestion] = useState([]);
 
-  const [userUUID, setUserUUID] = useState();
-
   useEffect(() => {
-    const pathArray = window.location.pathname.split("/");
-    console.log("user_uuid: ", pathArray);
-    setUserUUID(pathArray[pathArray.length - 1]);
-
-    console.log("userUUID: ", userUUID);
-
+    console.log(id);
     getUser();
     getQuestion();
-  }, [userUUID]);
+  }, [id]);
 
   async function getUser() {
     try {
       const res = await client.auth.get(
-        `http://localhost:8006/api/get-user-by-id?user_id=${userUUID}`
+        `http://localhost:8006/api/get-user-by-id?user_id=${id}`
       );
       const data = await res.data.data;
       setUser({
@@ -45,7 +42,7 @@ export default function Profile() {
   async function getQuestion() {
     try {
       const res = await client.auth.get(
-        `http://localhost:8009/api/get-question-by-user-id?user_id=${userUUID}`
+        `http://localhost:8009/api/get-question-by-user-id?user_id=${id}`
       );
       const data = await res.data.data;
 
