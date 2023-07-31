@@ -31,13 +31,13 @@ export default function AskQuestion() {
     const res = await client.main.get(
       "http://localhost:8009/api/get-list-category"
     );
-    setCategory(res.data.data);
+    setCategory(res.data.data.categories);
   }
 
   async function getTag() {
     const res = await client.main.get("http://localhost:8009/api/get-list-tag");
     setTag(
-      res.data.data.map((item) => ({ id: item.tag_id, name: item.tag_name }))
+      res.data.data.tags.map((item) => ({ id: item.id, name: item.name }))
     );
   }
 
