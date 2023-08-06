@@ -26,7 +26,6 @@ export default function Profile() {
   const [fullName, setFullName] = useState("");
   const [avatar, setAvatar] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
-  const [error, setError] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);

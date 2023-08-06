@@ -12,7 +12,7 @@ export default function ImageUploader({
   initAvatarPath,
 }) {
   const [localFilePath, setLocalFilePath] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState();
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -38,15 +38,21 @@ export default function ImageUploader({
     return data.secure_url;
   };
 
-  const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
+  const handleFileChange = (event) => {
+    if (event?.target?.files?.[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setLocalFilePath(URL.createObjectURL(file));
+      setImage(file);
+    }
   };
 
   const handleSubmit = async () => {
     const imageURL = await handleImageUpload();
-
-    console.log("imageURL: ", imageURL);
-    console.log("userId: ", userId);
 
     try {
       const res = await client.auth.put(

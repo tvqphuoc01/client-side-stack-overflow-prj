@@ -13,10 +13,12 @@ export default function AskQuestion() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [localFilePath, setLocalFilePath] = useState("");
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (!hasCookie("user_uuid")) {
@@ -51,8 +53,10 @@ export default function AskQuestion() {
     setSelectedTags(Array.isArray(e) ? e.map((tag) => tag.value) : []);
   };
 
-  const handleSubmitQuestion = (e) => {
+  const handleSubmitQuestion = async (e) => {
     e.preventDefault();
+
+    const imageURL = await handleImageUpload();
 
     const userUUID = getCookie("user_uuid");
     const data = {
@@ -61,7 +65,7 @@ export default function AskQuestion() {
       category_ids: selectedCategories,
       tag_ids: selectedTags,
       user_id: userUUID,
-      image_url: imageUrl,
+      image_url: imageURL,
     };
 
     client.main
@@ -73,7 +77,7 @@ export default function AskQuestion() {
         );
         setTimeout(() => {
           setSuccessMessage("");
-          // window.location.href = "/questions";
+          window.location.href = `/profile/${userUUID}`;
         }, 5000);
       })
       .catch((err) => {
@@ -85,6 +89,36 @@ export default function AskQuestion() {
           setErrorMessage("");
         }, 3000);
       });
+  };
+
+  const handleImageUpload = async () => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "stack-overflow-clone-question"); // Replace with your upload preset
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/n3-udpt/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    return data.secure_url;
+  };
+
+  const handleFileChange = (event) => {
+    if (event?.target?.files?.[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setLocalFilePath(URL.createObjectURL(file));
+      setImage(file);
+    }
   };
 
   return (
@@ -206,15 +240,20 @@ export default function AskQuestion() {
             {/* input imare url (similar to title) */}
             <label className="block">
               <span className="after:content-['(*)'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700 pb-2">
-                Image URL
+                Image
               </span>
-              <input
-                required
-                type="url"
-                placeholder="Input your image url here"
-                className="w-full rounded border border-gray-300 py-2 px-4"
-                onChange={(e) => setImageUrl(e.target.value)}
+              <img
+                src={
+                  localFilePath
+                    ? localFilePath
+                    : "https://t3.ftcdn.net/jpg/03/45/05/92/360_F_345059232_CPieT8RIWOUk4JqBkkWkIETYAkmz2b75.jpg"
+                }
+                alt="Avatar Image"
+                width={300}
+                height={300}
+                className="object-fill mb-4"
               />
+              <input type="file" onChange={handleFileChange} />
             </label>
 
             <button
