@@ -83,7 +83,7 @@ export default function QuestionCard({
       </div>
       <a
         className="text-lg text-green-500 font-bold hover:underline"
-        href={`questions/${id}`}
+        href={status === 0 || status == undefined ? "#" : `/question/${id}`}
       >
         {title}
       </a>

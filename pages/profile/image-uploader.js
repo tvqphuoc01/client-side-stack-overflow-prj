@@ -1,19 +1,25 @@
 "use client"; // This is a client component
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Modal, Typography } from "@mui/material";
-import client from "../../../configs/axios.config";
+import client from "../../configs/axios.config";
 
 export default function ImageUploader({
   isOpen,
   onClose,
   onUpdated,
   userId,
-  initialAvatarPath,
+  initAvatarPath,
 }) {
   const [localFilePath, setLocalFilePath] = useState("");
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initAvatarPath) {
+      setLocalFilePath(initAvatarPath);
+    }
+  }, [initAvatarPath]);
 
   const handleImageUpload = async () => {
     const formData = new FormData();
@@ -29,7 +35,6 @@ export default function ImageUploader({
     );
 
     const data = await response.json();
-    console.log("vavva: ", data.secure_url);
     return data.secure_url;
   };
 
@@ -93,15 +98,16 @@ export default function ImageUploader({
           {error}
         </Typography>
 
-        <image
+        <img
           src={
             localFilePath
               ? localFilePath
               : "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png"
           }
           alt="Avatar Image"
-          width={500}
-          height={500}
+          width={400}
+          height={400}
+          className="rounded-full object-fill mb-4"
         />
         <input type="file" onChange={handleFileChange} />
 

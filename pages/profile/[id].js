@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import ChangeInformationModal from "./change-information";
 
 import client from "../../configs/axios.config";
-import ImageUploader from "../../components/client-layout/form-item/image-uploader";
+import ImageUploader from "./image-uploader";
 export default function Profile() {
   const router = useRouter();
   const { id } = router.query;
@@ -125,7 +125,7 @@ export default function Profile() {
             onClose={closeUploadAvatarModal}
             onUpdated={onUpdated}
             userId={id}
-            initialAvatarPath={user.avatar}
+            initAvatarPath={user.avatar}
           />
 
           <Button
@@ -146,7 +146,7 @@ export default function Profile() {
             isOpen={isModalOpen}
             onClose={closeUpdateInformationModal}
             onUpdated={onUpdated}
-            initialFullName={user.name}
+            initFullName={user.name}
             userId={id}
           />
 

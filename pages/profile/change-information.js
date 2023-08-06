@@ -8,19 +8,19 @@ export default function ChangeInformationModal({
   isOpen,
   onClose,
   onUpdated,
-  initialFullName,
+  initFullName,
   userId,
 }) {
-  const [fullName, setFullName] = useState(initialFullName);
+  const [fullName, setFullName] = useState(initFullName);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("initialFullName 1: ", initialFullName);
-  }, []);
+    if (initFullName) {
+      setFullName(initFullName);
+    }
+  }, [initFullName]);
 
   async function handleUpdateInfo() {
-    console.log("inputFullName 2: ", initialFullName);
-
     try {
       const res = await client.auth.put(
         `http://localhost:8006/api/user-update-me`,
