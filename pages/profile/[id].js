@@ -8,12 +8,13 @@ import {
   Modal,
 } from "@mui/material";
 import Layout from "../../components/client-layout/layout";
-// import QuestionCard from "./question-card";
 import QuestionCard from "../../components/client-layout/card-item/card-question";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import ChangeInformationModal from "./change-information";
 
 import client from "../../configs/axios.config";
+import ImageUploader from "../../components/client-layout/form-item/image-uploader";
 export default function Profile() {
   const router = useRouter();
   const { id } = router.query;
@@ -24,12 +25,33 @@ export default function Profile() {
 
   const [fullName, setFullName] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [openModal, setOpenModal] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [error, setError] = useState("");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
+
+  const openUpdateInformationModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeUpdateInformationModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openUploadAvatarModal = () => {
+    setIsModalOpen2(true);
+  };
+
+  const closeUploadAvatarModal = () => {
+    setIsModalOpen2(false);
+  };
+
+  const onUpdated = () => {
+    setIsUpdate(!isUpdate);
+  };
+
   useEffect(() => {
-    console.log(id);
     getUser();
     getQuestion();
   }, [id, isUpdate]);
@@ -64,98 +86,14 @@ export default function Profile() {
       const data = await res.data.data;
 
       setQuestion(data);
-      console.log(question);
     } catch (err) {
       console.log(err);
     }
   }
-
-  async function handleUpdateInfo() {
-    try {
-      if (checkImage(avatar) === false) {
-        setError("Avatar URL is not valid, please try again");
-        return;
-      }
-
-      const res = await client.auth.put(
-        `http://localhost:8006/api/user-update-me`,
-        {
-          user_id: id,
-          full_name: fullName,
-          image_url: avatar,
-        }
-      );
-      const data = await res.data.data;
-      console.log(data);
-      setError("");
-      setOpenModal(false);
-      setIsUpdate(!isUpdate);
-    } catch (err) {
-      setError("Full name and/or avatar URL is not valid, please try again");
-      console.log(err);
-    }
-  }
-
-  const modalStyle = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  const paperStyle = {
-    backgroundColor: "#fff",
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-    padding: "16px",
-    minWidth: "300px",
-  };
 
   return (
     <div className="flex flex-row px-16 py-5">
-      <Modal open={openModal} style={modalStyle}>
-        <div style={paperStyle}>
-          <Typography variant="h6">Update Information</Typography>
-          {/* Error Message */}
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: "400",
-              lineHeight: "16px",
-              color: "#FF0000",
-            }}
-          >
-            {error}
-          </Typography>
-
-          <TextField
-            label="Full Name"
-            value={fullName}
-            onChange={() => setFullName(event.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Avatar URL"
-            value={avatar}
-            onChange={() => setAvatar(event.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <div className="flex flex-row justify-end gap-2 pt-4">
-            <Button variant="filled" color="success" onClick={handleUpdateInfo}>
-              Update
-            </Button>
-            <Button
-              variant="outlined"
-              color="success"
-              onClick={() => setOpenModal(false)}
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      <div className="bg-white flex flex-col gap-3 px-2 p-5 rounded-lg">
+      <div className="bg-white flex flex-col gap-3 px-5 p-5 rounded-lg">
         <div className="flex flex-row justify-center">
           <img
             src={
@@ -163,22 +101,11 @@ export default function Profile() {
                 ? user.avatar
                 : "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png"
             }
+            style={{ width: "220px", height: "220px" }}
             className="rounded-full object-fill w-1/2"
           />
         </div>
         <div className="flex flex-col gap-2">
-          {/* <Button
-            variant="outlined"
-            sx={{
-              borderColor: "#82D200",
-              color: "#82D200",
-              textTransform: "none",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Upload avatar
-          </Button> */}
           <Button
             variant="outlined"
             sx={{
@@ -188,10 +115,41 @@ export default function Profile() {
               fontWeight: 600,
               fontSize: 16,
             }}
-            onClick={() => setOpenModal(true)}
+            onClick={openUploadAvatarModal}
+          >
+            Upload avatar
+          </Button>
+
+          <ImageUploader
+            isOpen={isModalOpen2}
+            onClose={closeUploadAvatarModal}
+            onUpdated={onUpdated}
+            userId={id}
+            initialAvatarPath={user.avatar}
+          />
+
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: "#82D200",
+              color: "#82D200",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+            onClick={openUpdateInformationModal}
           >
             Update information
           </Button>
+
+          <ChangeInformationModal
+            isOpen={isModalOpen}
+            onClose={closeUpdateInformationModal}
+            onUpdated={onUpdated}
+            initialFullName={user.name}
+            userId={id}
+          />
+
           <Button
             variant="outlined"
             sx={{
@@ -331,6 +289,7 @@ export default function Profile() {
                 number_of_answer={item.number_of_answer}
                 created_date={item.create_date}
                 tag_list={item.question_tag_list}
+                status={item.status}
               />
             ))
           ) : (

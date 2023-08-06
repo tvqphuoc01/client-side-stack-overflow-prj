@@ -1,5 +1,7 @@
 "use client"; // This is a client component
 
+import { Chip } from "@mui/material";
+
 export default function QuestionCard({
   id,
   user_avatar,
@@ -10,10 +12,23 @@ export default function QuestionCard({
   number_of_dislike,
   created_date,
   tag_list,
+  status,
 }) {
   return (
     <div className="mt-4 border border-gray-300 bg-white px-6 py-4 rounded-md">
       <div className="flex-col my-1">
+        {status !== undefined && (
+          <Chip
+            label={
+              status === 0 ? "Pending" : status === 1 ? "Approved" : "Rejected"
+            }
+            color={
+              status === 0 ? "primary" : status === 1 ? "success" : "disabled"
+            }
+            variant="outlined"
+            className="py-2 mr-4"
+          />
+        )}
         <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
           <svg
             className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
