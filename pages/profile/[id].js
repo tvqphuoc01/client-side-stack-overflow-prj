@@ -12,12 +12,14 @@ import QuestionCard from "../../components/client-layout/card-item/card-question
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import ChangeInformationModal from "./change-information";
+import ImageUploader from "./image-uploader";
 
 import client from "../../configs/axios.config";
-import ImageUploader from "./image-uploader";
+import { getCookie } from "cookies-next";
 export default function Profile() {
   const router = useRouter();
   const { id } = router.query;
+  const userUUID = getCookie("user_uuid");
 
   const [tag, setTag] = useState("question");
   const [question, setQuestion] = useState([]);
@@ -104,64 +106,72 @@ export default function Profile() {
             className="rounded-full object-fill w-1/2"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Button
-            variant="outlined"
-            sx={{
-              borderColor: "#82D200",
-              color: "#82D200",
-              textTransform: "none",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-            onClick={openUploadAvatarModal}
-          >
-            Upload avatar
-          </Button>
 
-          <ImageUploader
-            isOpen={isModalOpen2}
-            onClose={closeUploadAvatarModal}
-            onUpdated={onUpdated}
-            userId={id}
-            initAvatarPath={user.avatar}
-          />
+        <>
+          {userUUID !== undefined && id !== undefined && userUUID === id && (
+            <div>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#82D200",
+                    color: "#82D200",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: 16,
+                  }}
+                  onClick={openUploadAvatarModal}
+                >
+                  Upload avatar
+                </Button>
 
-          <Button
-            variant="outlined"
-            sx={{
-              borderColor: "#82D200",
-              color: "#82D200",
-              textTransform: "none",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-            onClick={openUpdateInformationModal}
-          >
-            Update information
-          </Button>
+                <ImageUploader
+                  isOpen={isModalOpen2}
+                  onClose={closeUploadAvatarModal}
+                  onUpdated={onUpdated}
+                  userId={id}
+                  initAvatarPath={user.avatar}
+                />
 
-          <ChangeInformationModal
-            isOpen={isModalOpen}
-            onClose={closeUpdateInformationModal}
-            onUpdated={onUpdated}
-            initFullName={user.name}
-            userId={id}
-          />
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#82D200",
+                    color: "#82D200",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: 16,
+                  }}
+                  onClick={openUpdateInformationModal}
+                >
+                  Update information
+                </Button>
 
-          <Button
-            variant="outlined"
-            sx={{
-              borderColor: "#82D200",
-              color: "#82D200",
-              textTransform: "none",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Change Password
-          </Button>
-        </div>
+                <ChangeInformationModal
+                  isOpen={isModalOpen}
+                  onClose={closeUpdateInformationModal}
+                  onUpdated={onUpdated}
+                  initFullName={user.name}
+                  userId={id}
+                />
+
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#82D200",
+                    color: "#82D200",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: 16,
+                  }}
+                >
+                  Change Password
+                </Button>
+              </div>
+            </div>
+          )}{" "}
+        </>
+
         <div className="flex flex-col gap-2">
           {user.status === "pending" ? (
             <Chip
