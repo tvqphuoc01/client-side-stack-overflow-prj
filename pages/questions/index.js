@@ -208,21 +208,14 @@ export default function QuestionList() {
               </div>
               <div className="mb-7">
                 {question.length > 0 ? (
-                  question.map((item) => (
-                    <QuestionCard
-                      key={item.id} // Don't forget to add a unique key prop when rendering in a loop
-                      id={item.id}
-                      user_avatar=""
-                      user_name=""
-                      title={item.title}
-                      content={item.content}
-                      number_of_like={item.number_of_like}
-                      number_of_dislike={item.number_of_dislike}
-                      number_of_answer={item.number_of_answer}
-                      created_date={item.create_date}
-                      tag_list={item.tag_list}
-                    />
-                  ))
+                  question.map((item) => {
+                    return (
+                      <QuestionCard
+                        key={item.id} // Don't forget to add a unique key prop when rendering in a loop
+                        question={item}
+                      />
+                    )
+                  })
                 ) : (
                   <div className="flex flex-col items-center justify-center">
                     <img
