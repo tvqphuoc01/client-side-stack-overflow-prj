@@ -1,62 +1,38 @@
 import Layout from "../../components/client-layout/layout";
 import QuestionCard from "../../components/client-layout/card-item/card-question";
 import { useSession } from "next-auth/react"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import client from "../../configs/axios.config";
 
 export default function HomePage() {
-    const { data: session, status } = useSession()
-
+    const [questions, setQuestions] = useState([]);
+    const [tags, setTags] = useState([]);
     useEffect(() => {
-        console.log("session", session)
-        console.log("status", status)
-    }, [])
+        getTopQuestion();
+        getTopFiveTag();
+    }, []);
 
-    const questions = [
-        {
-            user_avatar: "https://source.unsplash.com/75x75/?portrait",
-            user_name: "John Doe",
-            title: "How can I optimize my website's loading speed?",
-            content:
-                "I have a website that loads quite slowly. Are there any tips or techniques I can use to improve its loading speed?",
-            number_of_like: 10,
-            number_of_dislike: 2,
-            number_of_answer: 5,
-            create_date: "July 1st, 2023 at 10:00",
-            tag_list: ["web-development", "performance", "optimization"],
-        },
-        {
-            user_avatar: "https://source.unsplash.com/75x75/?portrait",
-            user_name: "Jane Smith",
-            title: "How to handle errors in JavaScript?",
-            content:
-                "I'm new to JavaScript and I'm wondering how I can handle errors effectively in my code. Any recommendations or best practices?",
-            number_of_like: 5,
-            number_of_dislike: 1,
-            number_of_answer: 3,
-            create_date: "July 2nd, 2023 at 14:30",
-            tag_list: ["javascript", "error-handling"],
-        },
-        {
-            user_avatar: "https://source.unsplash.com/75x75/?portrait",
-            user_name: "Alex Johnson",
-            title: "What are the benefits of using React for web development?",
-            content:
-                "I've heard a lot about React but I'm not sure why it's so popular. Can someone explain the benefits of using React for web development?",
-            number_of_like: 8,
-            number_of_dislike: 0,
-            number_of_answer: 4,
-            create_date: "July 3rd, 2023 at 09:15",
-            tag_list: ["react", "web-development"],
-        },
-    ];
+    async function getTopQuestion() {
+        try {
+            const res = await client.main.get(
+                `http://localhost:8009/api/get-top-three-question`
+            );
+            setQuestions(res.data.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
-    const tags = [
-        { name: "web-development", number_of_questions: 10 },
-        { name: "performance", number_of_questions: 8 },
-        { name: "optimization", number_of_questions: 6 },
-        { name: "javascript", number_of_questions: 4 },
-        { name: "error-handling", number_of_questions: 2 },
-    ];
+    async function getTopFiveTag() {
+        try {
+            const res = await client.main.get(
+                `http://localhost:8009/api/get-top-five-tag`
+            );
+            setTags(res.data.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     return (
         <Layout>
@@ -93,7 +69,7 @@ export default function HomePage() {
                         <hr className="border-gray-300 mb-8" />
                         <div className="px-4">
                             {questions.map((question, index) => (
-                                <QuestionCard key={index} {...question} />
+                                <QuestionCard key={index} question={question} />
                             ))}
                         </div>
                     </div>
@@ -107,7 +83,7 @@ export default function HomePage() {
                                     className="pl-2.5 py-1.5 rounded border border-green-400 mb-4 bg-white"
                                 >
                                     <div className="flex justify-between items-center">
-                                        <div className="text-lg">{tag.name}</div>
+                                        <div className="text-lg">{tag.tag_name}</div>
                                         <span className="bg-green-600 text-white text-lg font-medium mr-2 px-3 py-0.5 rounded">
                                             {tag.number_of_questions}
                                         </span>

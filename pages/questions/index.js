@@ -86,7 +86,7 @@ export default function QuestionList() {
           <p className="text-2xl font-bold text-gray-500">Loading...</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-4 flex flex-col items-start min-h-screen bg-slate-50 ">
+        <div className="md:grid md:grid-cols-3 gap-4 flex flex-col items-start min-h-screen bg-slate-50 ">
           <div className="col-span flex flex-col justify-between md:ml-16 md:my-4 rounded-lg shadow-md bg-white p-3">
             <div className="p-4">
               <h1 className="text-gray-700 text-2xl font-semibold">Search</h1>

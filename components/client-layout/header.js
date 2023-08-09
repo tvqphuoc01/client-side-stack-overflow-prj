@@ -30,7 +30,8 @@ function ResponsiveAppBar() {
   const [userUUID, setUserUUID] = React.useState();
 
   useEffect(() => {
-    setUserUUID(getCookie("user_uuid"));
+    if (hasCookie("user_uuid"))
+      setUserUUID(getCookie("user_uuid"));
   }, []);
 
   const handleLogout = async () => {

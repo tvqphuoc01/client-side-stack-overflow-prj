@@ -3,8 +3,8 @@
 import { useState } from "react";
 import client from "../../configs/axios.config";
 import { useEffect } from "react";
-import { hasCookie, setCookie } from "cookies-next";
-import { signIn } from "next-auth/react"
+import { deleteCookie, getCookie, hasCookie, setCookie } from "cookies-next";
+import { signIn, signOut } from "next-auth/react"
 import { useSession } from "next-auth/react"
 import Randomstring from "randomstring";
 
@@ -12,17 +12,9 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (hasCookie("user_uuid")) {
-      window.location.href = "/home";
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log(status);
-    console.log(hasCookie("user_uuid"))
     if (status == "authenticated" && !hasCookie("user_uuid"))
       client.auth.post(
         "http://localhost:8006/api/create-user",
@@ -34,7 +26,7 @@ export default function SignIn() {
           method: "google"
         }
       ).then((res) => {
-        setCookie("user_uuid", res.data.user_id);
+        setCookie("user_uuid", res.data.data.id);
         window.location.href = "/home";
       }).catch((err) => {
         console.log("error", err.response.data.message);
