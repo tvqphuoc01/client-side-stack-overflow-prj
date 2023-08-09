@@ -213,6 +213,7 @@ export default function QuestionList() {
                       <QuestionCard
                         key={item.id} // Don't forget to add a unique key prop when rendering in a loop
                         question={item}
+                        user_data={item.user_data.data}
                       />
                     )
                   })

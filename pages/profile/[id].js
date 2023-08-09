@@ -64,13 +64,7 @@ export default function Profile() {
       );
       const data = await res.data.data;
 
-      setUser({
-        name: data.full_name,
-        email: data.email,
-        point: data.user_points,
-        avatar: data.image_url,
-        status: data.account_status,
-      });
+      setUser(data);
 
       setFullName(data.full_name);
       setAvatar(data.image_url);
@@ -85,7 +79,6 @@ export default function Profile() {
         `http://localhost:8009/api/get-question-by-user-id?user_id=${id}`
       );
       const data = await res.data.data;
-
       setQuestion(data);
     } catch (err) {
       console.log(err);
@@ -98,8 +91,8 @@ export default function Profile() {
         <div className="flex flex-row justify-center">
           <img
             src={
-              user.avatar
-                ? user.avatar
+              user.image_url
+                ? user.image_url
                 : "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png"
             }
             style={{ width: "220px", height: "220px" }}
@@ -130,7 +123,7 @@ export default function Profile() {
                   onClose={closeUploadAvatarModal}
                   onUpdated={onUpdated}
                   userId={id}
-                  initAvatarPath={user.avatar}
+                  initAvatarPath={user.image_url}
                 />
 
                 <Button
@@ -151,7 +144,7 @@ export default function Profile() {
                   isOpen={isModalOpen}
                   onClose={closeUpdateInformationModal}
                   onUpdated={onUpdated}
-                  initFullName={user.name}
+                  initFullName={user.full_name}
                   userId={id}
                 />
 
@@ -173,7 +166,7 @@ export default function Profile() {
         </>
 
         <div className="flex flex-col gap-2">
-          {user.status === "pending" ? (
+          {user.account_status === "pending" ? (
             <Chip
               label="Pending"
               color="primary"
@@ -196,7 +189,7 @@ export default function Profile() {
           </Typography>
           <TextField
             disabled
-            value={user.name}
+            value={user.full_name}
             inputProps={{
               style: {
                 backgroundColor: "#DEDEDE",
@@ -230,7 +223,7 @@ export default function Profile() {
           </Typography>
           <TextField
             disabled
-            value={user.point}
+            value={user.user_points}
             inputProps={{
               sx: {
                 backgroundColor: "#DEDEDE",
@@ -290,15 +283,8 @@ export default function Profile() {
           {question.length > 0 ? (
             question.map((item, index) => (
               <QuestionCard
-                key={index}
-                title={item.title}
-                content={item.content}
-                number_of_like={item.number_of_like}
-                number_of_dislike={item.number_of_dislike}
-                number_of_answer={item.number_of_answer}
-                created_date={item.create_date}
-                tag_list={item.question_tag_list}
-                status={item.status}
+                question={question}
+                user_data={user}
               />
             ))
           ) : (

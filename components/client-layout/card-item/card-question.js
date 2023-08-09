@@ -3,7 +3,7 @@
 import { Chip } from "@mui/material";
 import moment from "moment";
 
-export default function QuestionCard({ question }) {
+export default function QuestionCard({ question, user_data }) {
   return (
     <div className="mt-4 border border-gray-300 bg-white px-6 py-4 rounded-md">
       <div className="flex-col my-1">
@@ -78,7 +78,7 @@ export default function QuestionCard({ question }) {
         {question?.title}
       </a>
       <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
-        {question?.content.substring(0, 200)} {" ..."}
+        {question?.content?.substring(0, 200)} {" ..."}
       </p>
       <div className="flex flex-wrap py-6 space-x-2">
         {question?.tag_list &&
@@ -97,12 +97,12 @@ export default function QuestionCard({ question }) {
         <div className="flex flex-col items-start justify-end w-full md:flex-row md:items-center text-gray-400">
           <div className="flex items-center md:space-x-2">
             <img
-              src={question?.user_data.data.image_url}
+              src={user_data.image_url}
               alt="User Avatar"
               className="w-6 h-6 rounded-full"
             />
             <a href="#" className="text-sm font-bold hover:underline">
-              {question?.user_data.data.full_name}
+              {user_data.full_name}
             </a>
           </div>
           <div className="flex items-center justify-end md:justify-start md:space-x-2">

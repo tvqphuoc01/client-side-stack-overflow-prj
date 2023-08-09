@@ -69,7 +69,7 @@ export default function HomePage() {
                         <hr className="border-gray-300 mb-8" />
                         <div className="px-4">
                             {questions.map((question, index) => (
-                                <QuestionCard key={index} question={question} />
+                                <QuestionCard key={index} question={question} user_data={question.user_data.data} />
                             ))}
                         </div>
                     </div>
