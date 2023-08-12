@@ -18,6 +18,9 @@ import { signOut } from "next-auth/react";
 
 import { useEffect } from "react";
 import { hasCookie, deleteCookie, getCookie } from "cookies-next";
+import { firebaseCloudMessaging } from "../../utils/firebase";
+import client from "../../configs/axios.config";
+
 
 const pages = [
   { title: "Homepage", link: "/home" },
@@ -30,8 +33,27 @@ function ResponsiveAppBar() {
   const [userUUID, setUserUUID] = React.useState();
 
   useEffect(() => {
-    if (hasCookie("user_uuid"))
+    if (hasCookie("user_uuid")) {
       setUserUUID(getCookie("user_uuid"));
+      firebaseCloudMessaging.init().then((token) => {
+        createDeviceToken(token, getCookie("user_uuid"))
+      });
+    }
+
+    async function createDeviceToken(token, user_id) {
+      try {
+        const res = await client.main.post(
+          `http://localhost:8009/api/create-device-token`,
+          {
+            token,
+            user_id
+          }
+        );
+        if (res.status == 200) console.log("create success")
+      } catch (err) {
+        console.log(err);
+      }
+    }
   }, []);
 
   const handleLogout = async () => {
