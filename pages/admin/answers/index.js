@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import client from "../../../configs/axios.config";
 import moment from "moment";
 import { Pagination, Select, MenuItem, BootstrapInput } from "@mui/material";
+import MyDialogAnswer from './my-dialog';
 
 import { getCookie } from "cookies-next";
 
@@ -15,6 +16,8 @@ export default function Answers() {
     const [isEditting, setIsEditting] = useState(-1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalAnswer, setTotalAnswers] = useState(0);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [rowToUpdate, setRowToUpdate] = useState([]);
     const itemPerPage = 10;
 
     useEffect(() => {
@@ -40,23 +43,54 @@ export default function Answers() {
         }
     }
 
-    async function updateAnsStatus(answerId, status){
-        try{
+    async function updateAnsStatus(answerId, status) {
+        try {
             const res = await client.main.put(
                 `http://localhost:8009/api/update-answer-status`, {
-                    answer_id: answerId,
-                    answer_status: status,
-                    requester_id: userUUID
-                }
-            )
+                answer_id: answerId,
+                answer_status: status,
+                requester_id: userUUID
+            }
+            );
+            const result = await res;
+            if (result.status == 200) {
+                alert('Update successfully');
+            }
+            else {
+                alert('Update unsuccessfully');
+            }
+
         } catch (err) {
             console.log(err);
         }
     }
 
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const getDetails = (e, rowId) => {
+        debugger;
+        setOpenDialog(true);
+        let details;
+        details = answers.filter((row) => {
+            return row.id === rowId;
+        });
+        setRowToUpdate(details);
+    };
 
     return (
         <Admin>
+            <MyDialogAnswer
+                open={openDialog}
+                handleOpenDialog={handleOpenDialog}
+                handleCloseDialog={handleCloseDialog}
+                values={rowToUpdate}
+            />
             <main className="h-full pb-16 overflow-y-auto">
                 <div className="container grid px-6 mx-auto mt-6">
                     <div className="w-full overflow-hidden rounded-lg shadow-xs">
@@ -95,7 +129,6 @@ export default function Answers() {
                                                     value={item.answer_status}
                                                     onChange={(event) => {
                                                         item.answer_status = event.target.value;
-                                                        // console.log(event.target.value)
                                                         setAnswers([...answers]);
                                                     }}
                                                 >
@@ -119,10 +152,9 @@ export default function Answers() {
                                                     {isEditting !== index && <button
                                                         className="flex items-center justify-between py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                         aria-label="Change"
-                                                        onClick={() => 
-                                                            {
-                                                                setIsEditting(index);
-                                                            }}
+                                                        onClick={() => {
+                                                            setIsEditting(index);
+                                                        }}
                                                     >
                                                         <svg
                                                             className="w-5 h-5"
@@ -135,6 +167,20 @@ export default function Answers() {
                                                             ></path>
                                                         </svg>
                                                     </button>}
+                                                    <td className="px-4 py-3">
+                                                        <div className="flex items-center text-sm">
+                                                            <button
+                                                                className="flex items-center justify-between py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                                aria-label="View"
+                                                                onClick={(e) => getDetails(e, item.id)}
+                                                            >
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path>
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                     {isEditting == index && <button
                                                         className="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                         aria-label="Edit"

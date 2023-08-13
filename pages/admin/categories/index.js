@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 export default function Categories() {
     const [categories, setCategories] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isEditting, setIsEditting] = useState(-1);
     const [totalCategories, setTotalCategories] = useState(0);
     const [open, setOpen] = useState(false);
     const [name, setName] = useState(null);
@@ -40,6 +41,22 @@ export default function Categories() {
         }
     }
 
+    async function updateCategories(id, name) {
+        try {
+            const result = await client.auth.patch(
+                "http://localhost:8009/api/edit-category",
+                {
+                    category_id: id,
+                    name: name,
+                    requester_id: userUUID
+                }
+            );
+        } catch (err) {
+            alert('Update not successfully!')
+            console.log(err);
+        }
+    }
+
     async function deleteCategories(id) {
         try {
             await client.auth.delete(
@@ -51,7 +68,13 @@ export default function Categories() {
                     }
                 }
             ).then((response) => {
-                resolve(response);
+                if (response.status == 200){
+                    alert('Delete successfully');
+                    getCategories();
+                }
+                else{
+                    alert('Delete unsuccessfully');
+                }
             }, (err) => {
                 console.log(err)
             })
@@ -155,12 +178,66 @@ export default function Categories() {
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">
-                                                    {item.name}
+                                                    {isEditting == index && <TextField
+                                                        defaultValue={item.name}
+                                                        style={{width: '350px'}}
+                                                        onChange={(event) => {
+                                                            item.name = event.target.value;
+                                                            setCategories([...categories]);
+                                                        }}
+                                                    />}
+                                                    {isEditting !== index && item.name}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center text-sm">
-
-                                                        {<button
+                                                    {isEditting !== index && <button
+                                                            className="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                            aria-label="Edit"
+                                                            onClick={() => {
+                                                                setIsEditting(index);
+                                                            }}
+                                                        >
+                                                            <svg
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                                fill="currentColor"
+                                                                viewBox="0 0 20 20"
+                                                            >
+                                                                <path
+                                                                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                                                                ></path>
+                                                            </svg>
+                                                        </button>}
+                                                        {isEditting == index && <button
+                                                            className="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                            aria-label="Edit"
+                                                            onClick={() => {
+                                                                setIsEditting(-1);
+                                                                updateCategories(item.id, item.name);
+                                                            }}
+                                                        >
+                                                            <svg
+                                                                className="w-5 h-5"
+                                                                fill="none"
+                                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12">
+                                                                <path stroke="green" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                                            </svg>
+                                                        </button>}
+                                                        {isEditting == index && <button
+                                                            className="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                            aria-label="Cancel"
+                                                            onClick={() => {
+                                                                setIsEditting(-1);
+                                                            }}
+                                                        >
+                                                            <svg className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                                fill="red"
+                                                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+                                                            </svg>
+                                                        </button>}
+                                                        {isEditting !== index && <button
                                                             className="flex items-center justify-between py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                             aria-label="Delete"
                                                             onClick={() => deleteCategories(item.id)}

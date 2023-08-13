@@ -64,7 +64,7 @@ export default function QuestionDetail() {
   return (
     <Layout>
       <div className="flex items-start justify-center min-h-screen py-5 bg-gray-100">
-        <div className="w-4/5 bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10 shadow-2xl">
+        <div className="w-4/5 bg-white rounded-lg flex flex-col items-left space-y-5 py-12 px-6 z-10 shadow-2xl">
           <div className="mt-4 border-b border-gray-300">
             <div className="flex-col my-1">
               <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
@@ -126,12 +126,7 @@ export default function QuestionDetail() {
               {question.title}
             </a>
             <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
-              {`
-                      I am trying to compute lot size having stop loss (as price) but the lot size ends up quite big and eventually, I get an error:
-                      Error code: 10014 Error message: Invalid volume
-                      My current code is:
-                      import MetaTrader5 as mt5 def calculate_lot_size(symbol, stop_loss_price): # Connect to the MetaTrader 5 terminal if not mt5.initialize(): print("Failed to initialize MetaTrader 5") return None # Get the current account balance account_info = mt5.account_info() if account_info is None: print("Failed to retrieve account information") mt5.shutdown() return None account_balance = account_info.balance # Get the symbol's point value (minimum price change) symbol_info = mt5.symbol_info(symbol) if symbol_info is None: print(f"Failed to retrieve symbol information for {symbol}") mt5.shutdown() return None point_value = symbol_info.point # Calculate the maximum acceptable loss based on the account balance and stop loss price max_loss = account_balance * (symbol_info.last / stop_loss_price - 1) # Calculate the lot size based on the maximum acceptable loss and the point value lot_size = max_loss / point_value # Print the calculated lot size print(f"Lot size for {symbol}: {lot_size} lots") # Disconnect from the MetaTrader 5 terminal mt5.shutdown() return lot_size # Example usage symbol = "EURUSD" stop_loss_price = 1.2000 # Stop loss price lot_size = calculate_lot_size(symbol, stop_loss_price)
-                      I believe that I am using the latest version of Metatrader5 which is 5.0.45`}
+              {question.content}
             </p>
             <div className="flex flex-wrap py-6 space-x-2">
               {/* <a

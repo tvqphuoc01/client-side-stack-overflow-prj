@@ -5,6 +5,7 @@ import client from "../../../configs/axios.config";
 import moment from "moment";
 import { Pagination } from "@mui/material";
 import { getCookie } from "cookies-next";
+import MyDialog from "./my-dialog";
 
 // This is a client component
 
@@ -13,7 +14,10 @@ export default function Questions() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemPerPage = 10;
     const [totalQuestions, setTotalQuestions] = useState(0);
+
     const userUUID = getCookie("user_uuid");
+    const [openDialog, setOpenDialog] = useState(false);
+    const [rowToUpdate, setRowToUpdate] = useState([]);
 
     useEffect(() => {
         getListQuestions();
@@ -25,7 +29,6 @@ export default function Questions() {
                 `http://localhost:8009/api/get-list-question?page=${currentPage}&page_size=${itemPerPage}&requester_id=${userUUID}`
             );
             const data = await res.data.data;
-            console.log(data)
             setTotalQuestions(await res.data.total);
             setQuestions(data);
         } catch (err) {
@@ -33,13 +36,37 @@ export default function Questions() {
         }
     }
 
-    function handlePage(p, e){
+    function handlePage(p, e) {
         setCurrentPage(e);
     }
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const getDetails = (e, rowId) => {
+        debugger;
+        setOpenDialog(true);
+        let details;
+        details = questions.filter((row) => {
+            return row.id === rowId;
+        });
+        setRowToUpdate(details);
+    };
 
 
     return (
         <Admin>
+            <MyDialog
+                open={openDialog}
+                handleOpenDialog={handleOpenDialog}
+                handleCloseDialog={handleCloseDialog}
+                values={rowToUpdate}
+            />
             <main className="h-full pb-16 overflow-y-auto">
                 <div className="container grid px-6 mx-auto mt-6">
                     <div className="w-full overflow-hidden rounded-lg shadow-xs">
@@ -70,19 +97,20 @@ export default function Questions() {
                                                     {moment(item.create_date).format('DD.MM.yyyy HH:mm:ss')}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">
-                                                    {item.user_id}
+                                                    {item.user_data.data.full_name}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm">
+                                                <td className="px-4 py-3 text-sm" >
                                                     {item.title}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm" style={{ overflow: "hidden", width: "200px", textOverflow: "ellipsis", }}>
+                                                <td className="px-4 py-3 text-sm" style={{ overflow: "hidden", width: "200px", textOverflow: "ellipsis", display: 'block', whiteSpace: 'nowrap' }}>
                                                     {item.content}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center text-sm">
                                                         <button
                                                             className="flex items-center justify-between py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                            aria-label="Delete"
+                                                            aria-label="View"
+                                                            onClick={(e) => getDetails(e, item.id)}
                                                         >
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path>
@@ -92,11 +120,13 @@ export default function Questions() {
                                                     </div>
                                                 </td>
                                             </tr>
+
                                         );
                                     })}
                                 </tbody>
                             </table>
                         </div>
+
                         <div
                             className="grid px-4 py-3 text-xs font-semibold tracking-wide sm:justify-end text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
                         >
@@ -120,6 +150,6 @@ export default function Questions() {
                     </div>
                 </div>
             </main>
-        </Admin>
+        </Admin >
     );
 }

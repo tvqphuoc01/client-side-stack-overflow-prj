@@ -51,7 +51,12 @@ export default function Tags() {
                     tag_id: tagId,
                     tag_name: tagName
                 }
+
             );
+            const status = (await result).status;
+            if (status == 200) {
+                alert('Update successfully')
+            }
         } catch (err) {
             console.log(err);
         }
@@ -85,13 +90,24 @@ export default function Tags() {
 
     async function deleteTags(tagId) {
         try {
-            await client.auth.delete(
+            const res = await client.main.delete(
                 "http://localhost:8009/api/delete-tag",
                 {
-                    tag_id: tagId,
-                    requester_id: userUUID
+                    data: {
+                        tag_id: tagId,
+                        requester_id: userUUID
+                    }
                 }
-            );
+            ).then((response) => {
+                if (response.status == 200) {
+                    alert('Update successfully');
+                    getTags();
+                }
+                else {
+                    alert('Update unsuccessfully');
+                }
+            })
+            
         } catch (err) {
             console.log(err);
         }
@@ -137,6 +153,7 @@ export default function Tags() {
                         </DialogActions>
                     </Dialog>
                 </div>
+
                 <div className="container grid px-6 mx-auto mt-6">
                     <div className="w-full overflow-hidden rounded-lg shadow-xs">
                         <div className="w-full overflow-x-auto">
@@ -221,7 +238,6 @@ export default function Tags() {
                                                                 viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
                                                             </svg>
-
                                                         </button>}
                                                         {isEditting !== index && <button
                                                             className="flex items-center justify-between py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
