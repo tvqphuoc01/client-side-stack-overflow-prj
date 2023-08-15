@@ -1,10 +1,18 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import client from "../../configs/axios.config";
+import Editor from "../../components/editor";
+import { Alert, Snackbar } from "@mui/material";
+import { getCookie } from "cookies-next";
 
 export default function AnswerRow({ answer }) {
-
-    const [reply, setReplies] = useState([])
+    // const [editorLoaded, setEditorLoaded] = useState(false);
+    const [data, setData] = useState("");
+    const [reply, setReplies] = useState([]);
+    const [openReply, setOpenReply] = useState(false);
+    const [hidden, setHidden] = useState(true);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [contentSnackbar, setContentSnackbar] = useState("");
     async function getReply(answer_id) {
         try {
             const res = await client.auth.get(
@@ -14,6 +22,32 @@ export default function AnswerRow({ answer }) {
             return data;
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    async function createReply() {
+        try {
+            const res = await client.main.post(
+                `http://localhost:8009/api/create-reply`,
+                {
+                    owner_id: getCookie("user_uuid"),
+                    answer_id: answer.id,
+                    content: data.replace("<img", `<img style="max-width: 200px"`)
+                }
+            );
+            console.log(res.status);
+            if (res.status == 201 || res.status == 200) {
+                let res = await getReply(answer.id);
+                setReplies(res)
+                setContentSnackbar("Create answer success. Please check status of answer in your profile")
+            } else {
+                setContentSnackbar("Create answer failed")
+            }
+            setData("");
+            setOpenSnackbar(true);
+        } catch (err) {
+            console.log(err);
+            return null;
         }
     }
 
@@ -28,15 +62,16 @@ export default function AnswerRow({ answer }) {
         <div className="space-y-4 mx-10">
             <div className="flex flex-col mt-4 border-b border-gray-300">
                 <div className="flex-col my-1">
-                    <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
+                    <div className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
                         <svg
-                            className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                            className="w-5 h-5 mr-1"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path
+                                className="text-green-600"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
@@ -44,16 +79,17 @@ export default function AnswerRow({ answer }) {
                             ></path>
                         </svg>
                         {answer.number_of_like}
-                    </button>
-                    <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
+                    </div>
+                    <div className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
                         <svg
-                            className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                            className="w-5 h-5 mr-1"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
                             <path
+                                className="text-red-600"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
@@ -61,10 +97,10 @@ export default function AnswerRow({ answer }) {
                             />
                         </svg>
                         {answer.number_of_dislike}
-                    </button>
-                    <button className="inline-flex items-center px-1 -ml-1 flex-column">
+                    </div>
+                    <div className="inline-flex items-center px-1 -ml-1 flex-column">
                         <svg
-                            className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                            className="w-5 h-5 mr-1 text-gray-600"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -78,16 +114,13 @@ export default function AnswerRow({ answer }) {
                             />
                         </svg>
                         {reply.length} Answers
-                    </button>
+                    </div>
                 </div>
-                <p className="text-sm text-gray-500 font-medium hover:text-gray-700 my-2">
+                <div dangerouslySetInnerHTML={{ __html: answer.content }}>
+                </div>
+                {/* <p className="text-sm text-gray-500 font-medium hover:text-gray-700 my-2">
                     {answer.content}
-                </p>
-                <img
-                    src="https://johnstillk8.scusd.edu/sites/main/files/imagecache/carousel/main-images/camera_lense_0.jpeg"
-                    alt=""
-                    className="w-[40%] h-[40%] pt-4"
-                />
+                </p> */}
                 <div className="flex justify-between items-center my-4">
                     <div className="flex flex-col items-start justify-end w-full md:flex-row md:items-center text-gray-400">
                         <div className="flex items-center md:space-x-2">
@@ -102,59 +135,6 @@ export default function AnswerRow({ answer }) {
                         </div>
                     </div>
                 </div>
-                {/* <div className="flex items-center justify-end text-gray-400">
-                    <p className="text-sm italic pr-2">Rate this answer</p>
-                    <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-yellow-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <title>First star</title>
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
-                    <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-yellow-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <title>Second star</title>
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
-                    <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-yellow-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <title>Third star</title>
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
-                    <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-yellow-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <title>Fourth star</title>
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
-                    <svg
-                        aria-hidden="true"
-                        className="w-5 h-5 text-gray-300 dark:text-gray-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <title>Fifth star</title>
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
-                </div> */}
                 <div className="flex flex-row justify-between my-3">
                     <div className="flex-col my-1">
                         <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
@@ -190,7 +170,7 @@ export default function AnswerRow({ answer }) {
                             </svg>
                         </button>
                     </div>
-                    <a className="font-medium text-green-500 inline-flex items-center px-1 -ml-1 mr-2 flex-column">
+                    <button className="font-medium text-green-500 hover:text-green-700 inline-flex items-center px-1 -ml-1 mr-2 flex-column" onClick={() => { setOpenReply(true); }}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -206,22 +186,23 @@ export default function AnswerRow({ answer }) {
                             />
                         </svg>
                         Reply
-                    </a>
+                    </button>
                 </div>
             </div>
-            <div className="space-y-4 mx-10">
+            <div className={`space-y-4 mx-10 ${hidden ? "hidden" : ""}`}>
                 {reply.map((item) => (
                     <div className="flex flex-col mt-4 border-b border-gray-300">
                         <div className="flex-col my-1">
-                            <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
+                            <div className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
                                 <svg
-                                    className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                                    className="w-5 h-5 mr-1"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
+                                        className="text-green-600"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
@@ -229,16 +210,17 @@ export default function AnswerRow({ answer }) {
                                     ></path>
                                 </svg>
                                 {item.number_of_like}
-                            </button>
-                            <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
+                            </div>
+                            <div className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
                                 <svg
-                                    className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                                    className="w-5 h-5 mr-1"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
                                 >
                                     <path
+                                        className="text-red-600"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
@@ -246,10 +228,10 @@ export default function AnswerRow({ answer }) {
                                     />
                                 </svg>
                                 {item.number_of_dislike}
-                            </button>
-                            <button className="inline-flex items-center px-1 -ml-1 flex-column">
+                            </div>
+                            <div className="inline-flex items-center px-1 -ml-1 flex-column">
                                 <svg
-                                    className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+                                    className="w-5 h-5 mr-1 text-gray-600"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -263,16 +245,10 @@ export default function AnswerRow({ answer }) {
                                     />
                                 </svg>
                                 {item.reply?.length ?? 0} Answers
-                            </button>
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-500 font-medium hover:text-gray-700 my-2">
-                            {item.content}
-                        </p>
-                        <img
-                            src="https://johnstillk8.scusd.edu/sites/main/files/imagecache/carousel/main-images/camera_lense_0.jpeg"
-                            alt=""
-                            className="w-[40%] h-[40%] pt-4"
-                        />
+                        <div dangerouslySetInnerHTML={{ __html: item.content }}>
+                        </div>
                         <div className="flex justify-between items-center my-4">
                             <div className="flex flex-col items-start justify-end w-full md:flex-row md:items-center text-gray-400">
                                 <div className="flex items-center md:space-x-2">
@@ -287,59 +263,6 @@ export default function AnswerRow({ answer }) {
                                 </div>
                             </div>
                         </div>
-                        {/* <div className="flex items-center justify-end text-gray-400">
-                            <p className="text-sm italic pr-2">Rate this answer</p>
-                            <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>First star</title>
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>Second star</title>
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>Third star</title>
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>Fourth star</title>
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>Fifth star</title>
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                        </div> */}
                         <div className="flex flex-row justify-between my-3">
                             <div className="flex-col my-1">
                                 <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
@@ -375,27 +298,40 @@ export default function AnswerRow({ answer }) {
                                     </svg>
                                 </button>
                             </div>
-                            <a className="font-medium text-green-500 inline-flex items-center px-1 -ml-1 mr-2 flex-column">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-5 h-5 pr-1"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"
-                                    />
-                                </svg>
-                                Reply
-                            </a>
                         </div>
                     </div>
                 ))}
             </div>
+            {<button className="text-blue-500 hover:text-blue-700" onClick={() => { setHidden(!hidden) }}>{hidden ? "Show more answer" : "Show less answer"}</button>}
+            <Editor
+                name="description"
+                onChange={(data) => {
+                    setData(data);
+                }}
+                editorLoaded={openReply}
+                value={data}
+            />
+            {openReply ? <div className="flex justify-end">
+                <button
+                    className="text-green-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 border-2 border-green-500"
+                    onClick={() => { setOpenReply(false) }}
+                >
+                    Cancel
+                </button>
+                <button
+                    className="text-white w-50 bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                    onClick={async () => { await createReply() }}
+                >
+                    Post your answer
+                </button>
+            </div> : <></>}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => { setOpenSnackbar(false); setContentSnackbar("") }}
+            >
+                <Alert severity="success" elevation={6} variant="filled">{contentSnackbar}</Alert>
+            </Snackbar>
         </div>
     );
 }

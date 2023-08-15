@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import client from "../../configs/axios.config";
 import { userAgent } from "next/server";
 import AnswerRow from "./answer-row";
+import Editor from "../../components/editor";
+import { getCookie } from "cookies-next";
+import { Alert, Snackbar } from "@mui/material";
 
 export default function QuestionDetail() {
   const router = useRouter();
@@ -14,6 +17,16 @@ export default function QuestionDetail() {
 
   const [question, setQuestion] = useState({});
   const [answers, setAnswers] = useState([]);
+
+  const [editorLoaded, setEditorLoaded] = useState(false);
+  const [data, setData] = useState("");
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [contentSnackbar, setContentSnackbar] = useState("");
+
+  useEffect(() => {
+    setEditorLoaded(true);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +68,32 @@ export default function QuestionDetail() {
       );
       const data = await res.data.data;
       return data;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async function createAnswer() {
+    try {
+      const res = await client.main.post(
+        `http://localhost:8009/api/create-answer`,
+        {
+          user_id: getCookie("user_uuid"),
+          question_id: id,
+          content: data.replace("<img", `<img style="max-width: 200px"`)
+        }
+      );
+      console.log(res.status);
+      if (res.status == 201 || res.status == 200) {
+        let resAnswer = await getAnswer(id);
+        setAnswers(resAnswer)
+        setContentSnackbar("Create answer success. Please check status of answer in your profile")
+      } else {
+        setContentSnackbar("Create answer failed")
+      }
+      setData("");
+      setOpenSnackbar(true);
     } catch (err) {
       console.log(err);
       return null;
@@ -179,8 +218,28 @@ export default function QuestionDetail() {
             </div>
           </div>
           {answers.map((item) => (<AnswerRow answer={item} />))}
+          <Editor
+            name="description"
+            onChange={(data) => {
+              setData(data);
+            }}
+            editorLoaded={editorLoaded}
+            value={data}
+          />
+          <div className="flex justify-end">
+            <button onClick={async () => { await createAnswer() }} className="text-white float-right w-50 bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+              Post your answer
+            </button>
+          </div>
         </div>
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => { setOpenSnackbar(false); setContentSnackbar("") }}
+      >
+        <Alert severity="success" elevation={6} variant="filled">{contentSnackbar}</Alert>
+      </Snackbar>
     </Layout>
   );
 }
