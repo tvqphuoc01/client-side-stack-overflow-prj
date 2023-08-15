@@ -13,9 +13,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import ChangeInformationModal from "./change-information";
 import ImageUploader from "./image-uploader";
+import UpdatePassModal from "./update-password";
 
 import client from "../../configs/axios.config";
 import { getCookie } from "cookies-next";
+import { Update } from "@mui/icons-material";
 export default function Profile() {
   const router = useRouter();
   const { id } = router.query;
@@ -31,6 +33,7 @@ export default function Profile() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
 
   const openUpdateInformationModal = () => {
     setIsModalOpen(true);
@@ -50,6 +53,14 @@ export default function Profile() {
 
   const onUpdated = () => {
     setIsUpdate(!isUpdate);
+  };
+
+  const openUpdatePassModal = () => {
+    setIsModalOpen3(true);
+  };
+
+  const closeUpdatePassModal = () => {
+    setIsModalOpen3(false);
   };
 
   useEffect(() => {
@@ -157,9 +168,17 @@ export default function Profile() {
                     fontWeight: 600,
                     fontSize: 16,
                   }}
+                  onClick={openUpdatePassModal}
                 >
                   Change Password
                 </Button>
+
+                <UpdatePassModal
+                  isOpen={isModalOpen3}
+                  onClose={closeUpdatePassModal}
+                  onUpdated={onUpdated}
+                  userId={id}
+                />
               </div>
             </div>
           )}{" "}
@@ -282,10 +301,7 @@ export default function Profile() {
         <div className="mt-10">
           {question.length > 0 ? (
             question.map((item, index) => (
-              <QuestionCard
-                question={question}
-                user_data={user}
-              />
+              <QuestionCard question={question} user_data={user} />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center">
