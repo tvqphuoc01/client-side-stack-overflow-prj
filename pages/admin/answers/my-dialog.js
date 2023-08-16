@@ -19,27 +19,27 @@ function MyDialogAnswer({
         setValues(values);
     }, [values]);
 
-    const update_answer_status = async(questionID, status) => {
-        try{
+    const update_answer_status = async (questionID, status) => {
+        try {
             const res = await client.main.put(
                 `http://localhost:8009/api/update-answer-status`, {
-                    answer_id: questionID,
-                    answer_status: status,
-                    requester_id: userUUID
-                }
+                answer_id: questionID,
+                answer_status: status,
+                requester_id: userUUID
+            }
             )
             const result = await res;
-            if (result.status == 200){
+            if (result.status == 200) {
                 alert('Update successfully');
             }
-            else{
+            else {
                 alert('Update unsuccessfully');
             }
             handleCloseDialog();
         } catch (err) {
             console.log(err);
         }
-    
+
     };
 
     const handleClose = () => {
@@ -101,7 +101,7 @@ function MyDialogAnswer({
                             <span className="mt-2"><strong>Created at:</strong></span>
                             <span>{moment(values[0]?.create_date).format('ddd DD.MM.yyyy HH:mm')}</span>
                             <span className="mt-2"><strong>Status:</strong></span>
-                            <span>{values[0]?.answer_status == -1 ? 'Pending' : values[0]?.answer_status == 1 ? 'Approve' : 'Decline'}</span>
+                            <span>{values[0]?.answer_status == 0 ? 'Pending' : values[0]?.answer_status == 1 ? 'Approve' : 'Decline'}</span>
                             <span className="mt-2"><strong>From question:</strong></span>
                             <span>{values[0]?.question_id}</span>
                             <span className="mt-2"><strong>Content:</strong></span>

@@ -7,14 +7,17 @@ import { deleteCookie, getCookie, hasCookie, setCookie } from "cookies-next";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Randomstring from "randomstring";
+import { useRouter } from "next/router";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
+    console.log(hasCookie("user_uuid"));
     if (status == "authenticated" && !hasCookie("user_uuid"))
       client.auth
         .post("http://localhost:8006/api/create-user", {
@@ -25,8 +28,20 @@ export default function SignIn() {
           method: "google",
         })
         .then((res) => {
+          console.log("res", res);
           setCookie("user_uuid", res.data.data.id);
-          window.location.href = "/home";
+          client.auth
+            .get(
+              `http://localhost:8006/api/get-user-by-id?user_id=${res.data.data.id}`
+            )
+            .then((res) => {
+              console.log("res", res);
+              if (res.data.data.role !== "ADMIN") {
+                router.replace("/home");
+              } else {
+                router.replace("/admin");
+              }
+            });
         })
         .catch((err) => {
           console.log("error", err.response.data.message);

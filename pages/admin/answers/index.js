@@ -74,7 +74,6 @@ export default function Answers() {
     };
 
     const getDetails = (e, rowId) => {
-        debugger;
         setOpenDialog(true);
         let details;
         details = answers.filter((row) => {
@@ -118,10 +117,10 @@ export default function Answers() {
                                             </td>
                                             <td className="px-4 py-3 text-xs">
                                                 {isEditting !== index && <span
-                                                    className={`px-2 py-1 font-semibold leading-tight ${item.answer_status == -1 ? 'bg-orange-100 text-orange-700' : item.answer_status == 1 ? 'bg-green-100 text-green-700' :
+                                                    className={`px-2 py-1 font-semibold leading-tight ${item.answer_status == 0 ? 'bg-orange-100 text-orange-700' : item.answer_status == 1 ? 'bg-green-100 text-green-700' :
                                                         'bg-red-100 text-red-700'} rounded-full dark:text-white dark:bg-orange-600`}
                                                 >
-                                                    {item.answer_status == -1 ? 'Pending' : item.answer_status == 1 ? 'Approve' : 'Decline'}
+                                                    {item.answer_status == 0 ? 'Pending' : item.answer_status == 1 ? 'Approve' : 'Decline'}
                                                 </span>}
                                                 {isEditting === index && <Select
                                                     labelId="demo-customized-select-label"
@@ -132,7 +131,7 @@ export default function Answers() {
                                                         setAnswers([...answers]);
                                                     }}
                                                 >
-                                                    <MenuItem value={-1}>Pending</MenuItem>
+                                                    <MenuItem value={0}>Pending</MenuItem>
                                                     <MenuItem value={1}>Approve</MenuItem>
                                                     <MenuItem value={2}>Decline</MenuItem>
                                                 </Select>}

@@ -188,7 +188,7 @@ export default function Profile() {
         </>
 
         <div className="flex flex-col gap-2">
-          {user.account_status === "pending" ? (
+          {user.account_status == 0 ? (
             <Chip
               label="Pending"
               color="primary"
