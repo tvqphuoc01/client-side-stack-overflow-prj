@@ -16,11 +16,10 @@ import LoginIcon from "@mui/icons-material/Login";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { hasCookie, deleteCookie, getCookie } from "cookies-next";
 import { firebaseCloudMessaging } from "../../utils/firebase";
 import client from "../../configs/axios.config";
-
 
 const pages = [
   { title: "Homepage", link: "/home" },
@@ -36,8 +35,27 @@ function ResponsiveAppBar() {
     if (hasCookie("user_uuid")) {
       setUserUUID(getCookie("user_uuid"));
       firebaseCloudMessaging.init().then((token) => {
-        createDeviceToken(token, getCookie("user_uuid"))
+        createDeviceToken(token, getCookie("user_uuid"));
       });
+
+      getNotification();
+    }
+
+    async function getNotification() {
+      try {
+        // localhost:8009/api/get-user-notification?user_id=3775ef1a-bdde-4374-bb57-f0425a1ca48e
+        const res = await client.main.get(
+          `http://localhost:8009/api/get-user-notification?user_id=${getCookie(
+            "user_uuid"
+          )}`
+        );
+
+        const data = await res.data;
+        setNotifications(data);
+        console.log("notifications", notifications);
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     async function createDeviceToken(token, user_id) {
@@ -46,10 +64,10 @@ function ResponsiveAppBar() {
           `http://localhost:8009/api/create-device-token`,
           {
             token,
-            user_id
+            user_id,
           }
         );
-        if (res.status == 200) console.log("create success")
+        if (res.status == 200) console.log("create success");
       } catch (err) {
         console.log(err);
       }
@@ -66,6 +84,8 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElUNotification, setAnchorElUNotification] =
     React.useState(null);
+
+  const [notifications, setNotifications] = useState([]);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -188,7 +208,7 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNotification}
             >
-              <Badge color="error" badgeContent={3}>
+              <Badge color="error" badgeContent={notifications.number_of_noti}>
                 <NotificationsIcon
                   style={{
                     color: Boolean(anchorElUNotification) ? "#82D200" : "",
@@ -214,41 +234,42 @@ function ResponsiveAppBar() {
                 setAnchorElUNotification(null);
               }}
             >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting}
-                  onClick={() => {
-                    setAnchorElUNotification(null);
-                  }}
-                >
-                  <div
-                    className="flex flex-row gap-x-3"
-                    style={{ maxWidth: "350px", maxHeight: "74px" }}
+              {notifications.data &&
+                notifications.data.map((item) => (
+                  <MenuItem
+                    key={item}
+                    onClick={() => {
+                      setAnchorElUNotification(null);
+                    }}
                   >
-                    <img
-                      src="/chatbubble.svg"
-                      alt="Comment"
-                      className="w-7 h-7"
-                    />
                     <div
-                      className="flex flex-col"
-                      style={{ maxWidth: "318px" }}
+                      className="flex flex-row gap-x-3"
+                      style={{ maxWidth: "350px", maxHeight: "74px" }}
                     >
+                      <img
+                        src="/chatbubble.svg"
+                        alt="Comment"
+                        className="w-7 h-7"
+                      />
                       <div
-                        style={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
+                        className="flex flex-col"
+                        style={{ maxWidth: "318px" }}
                       >
-                        Abccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                      </div>
-                      <div style={{ fontWeight: 400, fontSize: 12 }}>
-                        May 28, 2023 at 16:39{" "}
+                        <div
+                          style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          item.content
+                        </div>
+                        <div style={{ fontWeight: 400, fontSize: 12 }}>
+                          item.create_date
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </MenuItem>
-              ))}
+                  </MenuItem>
+                ))}
             </Menu>
 
             {userUUID ? (

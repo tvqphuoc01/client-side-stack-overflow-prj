@@ -4,8 +4,8 @@ import { useState } from "react";
 import client from "../../configs/axios.config";
 import { useEffect } from "react";
 import { deleteCookie, getCookie, hasCookie, setCookie } from "cookies-next";
-import { signIn, signOut } from "next-auth/react"
-import { useSession } from "next-auth/react"
+import { signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Randomstring from "randomstring";
 
 export default function SignIn() {
@@ -16,25 +16,25 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status == "authenticated" && !hasCookie("user_uuid"))
-      client.auth.post(
-        "http://localhost:8006/api/create-user",
-        {
+      client.auth
+        .post("http://localhost:8006/api/create-user", {
           full_name: session.user.name,
           email: session.user.email,
           password: Randomstring.generate(),
           image_url: session.user.image,
-          method: "google"
-        }
-      ).then((res) => {
-        setCookie("user_uuid", res.data.data.id);
-        window.location.href = "/home";
-      }).catch((err) => {
-        console.log("error", err.response.data.message);
-        setTimeout(() => {
-          setErrorMessage("");
-        }, 5000);
-      })
-  }, [status])
+          method: "google",
+        })
+        .then((res) => {
+          setCookie("user_uuid", res.data.data.id);
+          window.location.href = "/home";
+        })
+        .catch((err) => {
+          console.log("error", err.response.data.message);
+          setTimeout(() => {
+            setErrorMessage("");
+          }, 5000);
+        });
+  }, [status]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -65,6 +65,41 @@ export default function SignIn() {
         setErrorMessage("");
       }, 5000);
     }
+  };
+
+  async function getResetKey() {
+    try {
+      const res = await client.auth.get(
+        `http://localhost:8006/api/get-user-validation-code?user_email=${email}`
+      );
+      const data = await res.data;
+      console.log(data);
+      return data.validation_code;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    const resetKey = await getResetKey();
+
+    try {
+      const res = await client.auth.post(
+        "http://localhost:8006/api/reset-password",
+        {
+          email: email,
+          reset_key: resetKey,
+        }
+      );
+      console.log(res.data);
+      alert("The new password has been sent to the email: " + email);
+    } catch (err) {
+      setErrorMessage("Something went wrong. Please try again later.");
+    }
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
   };
 
   return (
@@ -102,7 +137,10 @@ export default function SignIn() {
       <div className="w-2/5 w-full max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Stack Overflow</h1>
         <h2 className="text-3xl font-bold">Sign in to your account</h2>
-        <button className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full" onClick={() => signIn('google')}>
+        <button
+          className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full"
+          onClick={() => signIn("google")}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
             alt="Google Logo"
@@ -140,7 +178,10 @@ export default function SignIn() {
               />
               <span className="text-base font-normal">Remember me</span>
             </label>
-            <button className="text-green-500 text-base font-bold text-green-400">
+            <button
+              className="text-green-500 text-base font-bold text-green-400"
+              onClick={handleForgotPassword}
+            >
               Forgot Password?
             </button>
           </div>

@@ -91,6 +91,8 @@ export default function Profile() {
       );
       const data = await res.data.data;
       setQuestion(data);
+
+      console.log("question", question);
     } catch (err) {
       console.log(err);
     }
@@ -178,6 +180,7 @@ export default function Profile() {
                   onClose={closeUpdatePassModal}
                   onUpdated={onUpdated}
                   userId={id}
+                  userEmail={user.email}
                 />
               </div>
             </div>

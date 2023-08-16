@@ -9,6 +9,7 @@ export default function UpdatePassModal({
   onClose,
   onUpdated,
   userId,
+  userEmail,
 }) {
   const [newPass, setNewPass] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +20,7 @@ export default function UpdatePassModal({
   async function getResetKey() {
     try {
       const res = await client.auth.get(
-        `http://localhost:8006/api/get-user-validation-code?user_id=${userId}`
+        `http://localhost:8006/api/get-user-validation-code?user_email=${userEmail}`
       );
       const data = await res.data;
       console.log(data);

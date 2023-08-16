@@ -3,6 +3,7 @@
 import useAxios from "axios-hooks";
 import { useState } from "react";
 import client from "../../configs/axios.config";
+import { signIn, signOut } from "next-auth/react";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -14,7 +15,13 @@ export default function SignUp() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (password !== repeatPassword) {
+
+    if (password.length < 10) {
+      setErrorMessage("Password must be at least 10 characters long.");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+    } else if (password !== repeatPassword) {
       setErrorMessage("Password and repeat password do not match.");
       setTimeout(() => {
         setErrorMessage("");
@@ -111,7 +118,10 @@ export default function SignUp() {
       <div className="w-2/5 w-full max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Stack Overflow</h1>
         <h2 className="text-3xl font-bold">Sign up to your account</h2>
-        <button className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full">
+        <button
+          className="flex items-center justify-center bg-white py-2 px-4 rounded border border-gray-300 w-full"
+          onClick={() => signIn("google")}
+        >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
             alt="Google Logo"
