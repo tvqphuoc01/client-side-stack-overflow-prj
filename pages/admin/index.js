@@ -10,6 +10,7 @@ export default function Admin({ children }) {
   const router = useRouter();
 
   useEffect(() => {
+    console.log("admin")
     checkUser();
   }, []);
 
@@ -25,6 +26,8 @@ export default function Admin({ children }) {
           .then((res) => {
             if (res.data.data.role !== "ADMIN") {
               router.replace("/sign-in");
+            } else if (router.asPath == "/admin") {
+              router.replace("/admin/categories")
             }
           });
       }, 1);

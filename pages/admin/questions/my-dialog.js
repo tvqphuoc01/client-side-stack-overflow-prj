@@ -10,42 +10,59 @@ function MyDialog({
     open,
     handleOpenDialog,
     handleCloseDialog,
-    values
+    // values
+    id
 }) {
-    const [value, setValues] = useState([]);
+    // const [value, setValues] = useState([]);
+    const [detail, setDetail] = useState(null);
     const userUUID = getCookie("user_uuid");
+    console.log(id);
+
+    // useEffect(() => {
+    //     setValues(values);
+    // }, [values]);
 
     useEffect(() => {
-        setValues(values);
-    }, [values]);
+        getQuestionById();
+    }, [id]);
 
-    const update_question_status = async(questionID, status) => {
-        try{
-            const res = await client.main.put(
+    async function getQuestionById() {
+        try {
+            const res = await client.main.get(`http://localhost:8009/api/get-question-by-id?question_id=${id}&requester_id=${getCookie("user_uuid")}`);
+            setDetail(res.data.data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+
+    const update_question_status = async (questionID, status) => {
+        try {
+            const result = await client.main.put(
                 `http://localhost:8009/api/update-question-status`, {
-                    question_id: questionID,
-                    question_status: status,
-                    requester_id: userUUID
-                }
-            )
-            const result = await res;
-            if (result.status == 200){
-                alert('Update successfully');
+                question_id: questionID,
+                question_status: status,
+                requester_id: userUUID
             }
-            else{
+            )
+            if (result.status == 200) {
+                alert('Update successfully');
+                getQuestionById();
+            }
+            else {
                 alert('Update unsuccessfully');
             }
             handleCloseDialog();
         } catch (err) {
             console.log(err);
         }
-    
+
     };
 
     const handleClose = () => {
         handleCloseDialog();
     }
-    
+
     return (
         <div>
             <Dialog
@@ -95,17 +112,17 @@ function MyDialog({
                             direction={"column"}
                         >
                             <span><strong>ID:</strong></span>
-                            <span>{values[0]?.id}</span>
+                            <span>{detail?.id}</span>
                             <span className="mt-2"><strong>User created:</strong></span>
-                            <span>{values[0]?.user_data?.data?.full_name}</span>
+                            <span>{detail?.user_data?.data?.full_name}</span>
                             <span className="mt-2"><strong>Created at:</strong></span>
-                            <span>{moment(values[0]?.create_date).format('ddd DD.MM.yyyy HH:mm')}</span>
+                            <span>{moment(detail?.create_date).format('ddd DD.MM.yyyy HH:mm')}</span>
                             <span className="mt-2"><strong>Title:</strong></span>
-                            <span>{values[0]?.title}</span>
+                            <span>{detail?.title}</span>
                             <span className="mt-2"><strong>Status:</strong></span>
-                            <span>{values[0]?.status == -1 ? 'Pending' : values[0]?.status == 1 ? 'Approve' : 'Decline'}</span>
+                            <span>{detail?.status == 0 ? 'Pending' : detail?.status == 1 ? 'Approve' : 'Decline'}</span>
                             <span className="mt-2"><strong>Content:</strong></span>
-                            <span>{values[0]?.content}</span>
+                            <span>{detail?.content}</span>
                         </Grid>
                     </form>
                 </DialogContent>
@@ -115,8 +132,8 @@ function MyDialog({
                         size={"large"}
                         variant="outlined"
                         color="error"
-                        disabled={values[0]?.status !== 1}
-                        onClick={() => update_question_status(values[0]?.id, 0)}
+                        disabled={detail?.status == 2}
+                        onClick={() => update_question_status(detail?.id, 2)}
                     >
                         Decline
                     </Button>
@@ -125,8 +142,8 @@ function MyDialog({
                         size={"large"}
                         variant="outlined"
                         color="success"
-                        disabled={values[0]?.status == 1}
-                        onClick={() => update_question_status(values[0]?.id, 1)}
+                        disabled={detail?.status == 1}
+                        onClick={() => update_question_status(detail?.id, 1)}
                     >
                         Approve
                     </Button>

@@ -18,6 +18,8 @@ export default function Questions() {
     const userUUID = getCookie("user_uuid");
     const [openDialog, setOpenDialog] = useState(false);
     const [rowToUpdate, setRowToUpdate] = useState([]);
+    const [targetQuestionId, setTargetQuestionId] = useState("");
+    console.log("targetQuestionId", targetQuestionId);
 
     useEffect(() => {
         getListQuestions();
@@ -49,13 +51,13 @@ export default function Questions() {
     };
 
     const getDetails = (e, rowId) => {
-        debugger;
+        setTargetQuestionId(rowId);
         setOpenDialog(true);
-        let details;
-        details = questions.filter((row) => {
-            return row.id === rowId;
-        });
-        setRowToUpdate(details);
+        // let details;
+        // details = questions.filter((row) => {
+        //     return row.id === rowId;
+        // });
+        // setRowToUpdate(details);
     };
 
 
@@ -65,7 +67,7 @@ export default function Questions() {
                 open={openDialog}
                 handleOpenDialog={handleOpenDialog}
                 handleCloseDialog={handleCloseDialog}
-                values={rowToUpdate}
+                id={targetQuestionId}
             />
             <main className="h-full pb-16 overflow-y-auto">
                 <div className="container grid px-6 mx-auto mt-6">

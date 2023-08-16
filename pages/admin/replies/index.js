@@ -50,7 +50,6 @@ export default function Replies() {
     }
 
     const getDetails = (e, rowId) => {
-        debugger;
         setOpenDialog(true);
         let details;
         details = replies.filter((row) => {
@@ -59,7 +58,7 @@ export default function Replies() {
         });
         setRowToUpdate(details);
     };
-    
+
 
     return (
         <Admin>
@@ -79,8 +78,8 @@ export default function Replies() {
                                         className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
                                     >
                                         <th className="px-4 py-3">Id</th>
-                                        <th className="px-4 py-3">Status</th>
                                         <th className="px-4 py-3">Reply at</th>
+                                        <th className="px-4 py-3">Status</th>
                                         <th className="px-4 py-3">Reply by</th>
                                         <th className="px-4 py-3">From answer</th>
                                         <th className="px-4 py-3">Content</th>
@@ -100,10 +99,10 @@ export default function Replies() {
                                             </td>
                                             <td className="px-4 py-3 text-sm">
                                                 <span
-                                                    className={`px-2 py-1 font-semibold leading-tight ${item.answer_status == -1 ? 'bg-orange-100 text-orange-700' : item.answer_status == 1 ? 'bg-green-100 text-green-700' :
+                                                    className={`px-2 py-1 font-semibold leading-tight ${item.answer_status == 0 ? 'bg-orange-100 text-orange-700' : item.answer_status == 1 ? 'bg-green-100 text-green-700' :
                                                         'bg-red-100 text-red-700'} rounded-full dark:text-white dark:bg-orange-600`}
                                                 >
-                                                    {item.answer_status == -1 ? 'Pending' : item.answer_status == 1 ? 'Approve' : 'Decline'}
+                                                    {item.answer_status == 0 ? 'Pending' : item.answer_status == 1 ? 'Approve' : 'Decline'}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3 text-sm">
