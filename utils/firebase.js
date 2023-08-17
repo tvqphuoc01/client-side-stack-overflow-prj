@@ -35,7 +35,7 @@ const firebaseCloudMessaging = {
 
                 // Set token in our local storage
                 if (fcm_token) {
-                    localforage.setItem("fcm_token", fcm_token);
+                    await localforage.setItem("fcm_token", fcm_token);
                     return fcm_token;
                 }
             }

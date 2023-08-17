@@ -68,11 +68,11 @@ export default function Categories() {
                     }
                 }
             ).then((response) => {
-                if (response.status == 200){
+                if (response.status == 200) {
                     alert('Delete successfully');
                     getCategories();
                 }
-                else{
+                else {
                     alert('Delete unsuccessfully');
                 }
             }, (err) => {
@@ -180,7 +180,7 @@ export default function Categories() {
                                                 <td className="px-4 py-3 text-sm">
                                                     {isEditting == index && <TextField
                                                         defaultValue={item.name}
-                                                        style={{width: '350px'}}
+                                                        style={{ width: '350px' }}
                                                         onChange={(event) => {
                                                             item.name = event.target.value;
                                                             setCategories([...categories]);
@@ -190,7 +190,7 @@ export default function Categories() {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center text-sm">
-                                                    {isEditting !== index && <button
+                                                        {isEditting !== index && <button
                                                             className="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                             aria-label="Edit"
                                                             onClick={() => {
@@ -220,7 +220,7 @@ export default function Categories() {
                                                                 className="w-5 h-5"
                                                                 fill="none"
                                                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12">
-                                                                <path stroke="green" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                                                <path stroke="green" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5" />
                                                             </svg>
                                                         </button>}
                                                         {isEditting == index && <button

@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { hasCookie, deleteCookie, getCookie } from "cookies-next";
 import { firebaseCloudMessaging } from "../../utils/firebase";
 import client from "../../configs/axios.config";
+import { ListItemText } from "@mui/material";
 
 const pages = [
   { title: "Homepage", link: "/home" },
@@ -30,6 +31,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
   const [userUUID, setUserUUID] = React.useState();
+  const router = useRouter();
 
   useEffect(() => {
     if (hasCookie("user_uuid")) {
@@ -50,7 +52,7 @@ function ResponsiveAppBar() {
           )}`
         );
 
-        const data = await res.data;
+        const data = res.data.data;
         setNotifications(data);
         console.log("notifications", notifications);
       } catch (err) {
@@ -77,7 +79,7 @@ function ResponsiveAppBar() {
   const handleLogout = async () => {
     await signOut();
     deleteCookie("user_uuid");
-    window.location.reload();
+    router.replace("/home");
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -109,7 +111,7 @@ function ResponsiveAppBar() {
   const { asPath } = useRouter();
 
   return (
-    <AppBar position="static" className="bg-white">
+    <AppBar position="static" sx={{ backgroundColor: "white" }}>
       <Container maxWidth="xl" className="md:px-16 items-center">
         <Toolbar disableGutters className="h-auto">
           <Typography
@@ -192,8 +194,8 @@ function ResponsiveAppBar() {
                   paddingLeft: 16,
                   paddingRight: 16,
                   color: "#434343",
-                  borderBottomWidth: asPath == page.link ? "2px" : "0",
-                  borderColor: asPath == page.link ? "#82D200" : "",
+                  borderBottomWidth: asPath == page.link ? "2px" : "0px",
+                  borderColor: asPath == page.link ? "#82D200" : "transparent",
                 }}
                 className="border-b-4 flex flex-col justify-center text-base font-bold"
               >
@@ -211,7 +213,7 @@ function ResponsiveAppBar() {
               <Badge color="error" badgeContent={notifications.number_of_noti}>
                 <NotificationsIcon
                   style={{
-                    color: Boolean(anchorElUNotification) ? "#82D200" : "",
+                    color: Boolean(anchorElUNotification) ? "#82D200" : "#434343",
                   }}
                 />
               </Badge>
@@ -234,8 +236,8 @@ function ResponsiveAppBar() {
                 setAnchorElUNotification(null);
               }}
             >
-              {notifications.data &&
-                notifications.data.map((item) => (
+              {notifications.length !== 0 ?
+                notifications.map((item) => (
                   <MenuItem
                     key={item}
                     onClick={() => {
@@ -261,29 +263,29 @@ function ResponsiveAppBar() {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          item.content
+                          {item.content}
                         </div>
                         <div style={{ fontWeight: 400, fontSize: 12 }}>
-                          item.create_date
+                          {item.create_date}
                         </div>
                       </div>
                     </div>
                   </MenuItem>
-                ))}
+                )) : <ListItemText className="p-3">You have no notifications.</ListItemText>}
             </Menu>
 
             {userUUID ? (
               <>
                 <IconButton href={`/profile/${userUUID}`}>
-                  <AccountCircleIcon />
+                  <AccountCircleIcon color="#434343" />
                 </IconButton>
                 <IconButton onClick={handleLogout}>
-                  <LogoutIcon />
+                  <LogoutIcon color="#434343" />
                 </IconButton>
               </>
             ) : (
               <IconButton href="/sign-in">
-                <LoginIcon />
+                <LoginIcon color="#434343" />
               </IconButton>
             )}
 

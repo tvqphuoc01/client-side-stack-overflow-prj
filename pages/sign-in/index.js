@@ -8,6 +8,7 @@ import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Randomstring from "randomstring";
 import { useRouter } from "next/router";
+import localforage from "localforage";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -34,7 +35,7 @@ export default function SignIn() {
             .get(
               `http://localhost:8006/api/get-user-by-id?user_id=${res.data.data.id}`
             )
-            .then((res) => {
+            .then(async (res) => {
               console.log("res", res);
               if (res.data.data.role !== "ADMIN") {
                 router.replace("/home");

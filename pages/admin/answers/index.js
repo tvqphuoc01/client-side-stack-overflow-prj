@@ -192,7 +192,7 @@ export default function Answers() {
                                                             className="w-5 h-5"
                                                             fill="none"
                                                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12">
-                                                            <path stroke="green" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                                            <path stroke="green" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5" />
                                                         </svg>
                                                     </button>}
                                                 </div>

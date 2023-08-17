@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useState, useEffect } from "react";
 import client from "../../configs/axios.config";
 import { hasCookie, getCookie } from "cookies-next";
+import Editor from "../../components/editor";
 
 export default function AskQuestion() {
   const [category, setCategory] = useState([]);
@@ -16,18 +17,19 @@ export default function AskQuestion() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
-  const [localFilePath, setLocalFilePath] = useState("");
   const [image, setImage] = useState();
 
-  useEffect(() => {
-    if (getCookie("user_uuid") === "") {
-      window.location.href = "/sign-in";
-    }
+  const [editorLoaded, setEditorLoaded] = useState(false);
 
+  useEffect(() => {
     getCategory();
     getTag();
   }, []);
+
+  useEffect(() => {
+    setEditorLoaded(true);
+  }, []);
+
 
   async function getCategory() {
     const res = await client.main.get(
@@ -55,17 +57,15 @@ export default function AskQuestion() {
 
   const handleSubmitQuestion = async (e) => {
     e.preventDefault();
-
-    const imageURL = await handleImageUpload();
+    console.log(content);
 
     const userUUID = getCookie("user_uuid");
     const data = {
       title: title,
-      content: content,
+      content: content.replace("<img", `<img style="max-width: 200px"`),
       category_ids: selectedCategories,
       tag_ids: selectedTags,
       user_id: userUUID,
-      image_url: imageURL,
     };
 
     client.main
@@ -89,23 +89,6 @@ export default function AskQuestion() {
           setErrorMessage("");
         }, 3000);
       });
-  };
-
-  const handleImageUpload = async () => {
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", "stack-overflow-clone-question"); // Replace with your upload preset
-
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/n3-udpt/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await response.json();
-    return data.secure_url;
   };
 
   const handleFileChange = (event) => {
@@ -227,34 +210,15 @@ export default function AskQuestion() {
               <h1 className="text-slate-700 text-2xl font-extrabold pb-4">
                 Your problem
               </h1>
-              <textarea
-                required
-                type="text"
-                placeholder="Input your content here"
-                rows={6}
-                className="w-full rounded border border-gray-300 p-4"
-                onChange={(e) => setContent(e.target.value)}
+              <Editor
+                name="description"
+                onChange={(data) => {
+                  setContent(data);
+                }}
+                editorLoaded={editorLoaded}
+                value={content}
               />
             </div>
-
-            {/* input imare url (similar to title) */}
-            <label className="block">
-              <span className="after:content-['(*)'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700 pb-2">
-                Image
-              </span>
-              <img
-                src={
-                  localFilePath
-                    ? localFilePath
-                    : "https://t3.ftcdn.net/jpg/03/45/05/92/360_F_345059232_CPieT8RIWOUk4JqBkkWkIETYAkmz2b75.jpg"
-                }
-                alt="Avatar Image"
-                width={300}
-                height={300}
-                className="object-fill mb-4"
-              />
-              <input type="file" onChange={handleFileChange} />
-            </label>
 
             <button
               className="text-white float-right w-50 bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"

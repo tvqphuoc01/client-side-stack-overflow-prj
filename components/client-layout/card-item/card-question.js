@@ -13,7 +13,7 @@ export default function QuestionCard({ question, user_data }) {
               question?.status === 0 ? "Pending" : question?.status === 1 ? "Approved" : "Rejected"
             }
             color={
-              question?.status === 0 ? "primary" : question?.status === 1 ? "success" : "disabled"
+              question?.status === 0 ? "primary" : question?.status === 1 ? "success" : "error"
             }
             variant="outlined"
             className="py-2 mr-4"
@@ -21,7 +21,7 @@ export default function QuestionCard({ question, user_data }) {
         )}
         <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
           <svg
-            className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+            className="w-5 h-5 mr-1 text-green-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -38,7 +38,7 @@ export default function QuestionCard({ question, user_data }) {
         </button>
         <button className="inline-flex items-center px-1 -ml-1 mr-2 flex-column">
           <svg
-            className="w-5 h-5 mr-1 text-gray-600 cursor-pointer hover:text-gray-700"
+            className="w-5 h-5 mr-1 text-red-600"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -77,9 +77,10 @@ export default function QuestionCard({ question, user_data }) {
       >
         {question?.title}
       </a>
-      <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
+      {/* <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
         {question?.content?.substring(0, 200)} {" ..."}
-      </p>
+      </p> */}
+      <div dangerouslySetInnerHTML={{ __html: question?.content }}></div>
       <div className="flex flex-wrap py-6 space-x-2">
         {question?.tag_list &&
           question?.tag_list.map((tag, index) => (

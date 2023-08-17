@@ -112,81 +112,73 @@ export default function Profile() {
             className="rounded-full object-fill w-1/2"
           />
         </div>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: "#82D200",
+              color: "#82D200",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+            onClick={openUploadAvatarModal}
+          >
+            Upload avatar
+          </Button>
 
-        <>
-          {userUUID !== undefined && id !== undefined && userUUID === id && (
-            <div>
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="outlined"
-                  sx={{
-                    borderColor: "#82D200",
-                    color: "#82D200",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: 16,
-                  }}
-                  onClick={openUploadAvatarModal}
-                >
-                  Upload avatar
-                </Button>
+          <ImageUploader
+            isOpen={isModalOpen2}
+            onClose={closeUploadAvatarModal}
+            onUpdated={onUpdated}
+            userId={id}
+            initAvatarPath={user.image_url}
+          />
 
-                <ImageUploader
-                  isOpen={isModalOpen2}
-                  onClose={closeUploadAvatarModal}
-                  onUpdated={onUpdated}
-                  userId={id}
-                  initAvatarPath={user.image_url}
-                />
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: "#82D200",
+              color: "#82D200",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+            onClick={openUpdateInformationModal}
+          >
+            Update information
+          </Button>
 
-                <Button
-                  variant="outlined"
-                  sx={{
-                    borderColor: "#82D200",
-                    color: "#82D200",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: 16,
-                  }}
-                  onClick={openUpdateInformationModal}
-                >
-                  Update information
-                </Button>
+          <ChangeInformationModal
+            isOpen={isModalOpen}
+            onClose={closeUpdateInformationModal}
+            onUpdated={onUpdated}
+            initFullName={user.full_name}
+            userId={id}
+          />
 
-                <ChangeInformationModal
-                  isOpen={isModalOpen}
-                  onClose={closeUpdateInformationModal}
-                  onUpdated={onUpdated}
-                  initFullName={user.full_name}
-                  userId={id}
-                />
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: "#82D200",
+              color: "#82D200",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+            onClick={openUpdatePassModal}
+          >
+            Change Password
+          </Button>
 
-                <Button
-                  variant="outlined"
-                  sx={{
-                    borderColor: "#82D200",
-                    color: "#82D200",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: 16,
-                  }}
-                  onClick={openUpdatePassModal}
-                >
-                  Change Password
-                </Button>
-
-                <UpdatePassModal
-                  isOpen={isModalOpen3}
-                  onClose={closeUpdatePassModal}
-                  onUpdated={onUpdated}
-                  userId={id}
-                  userEmail={user.email}
-                />
-              </div>
-            </div>
-          )}{" "}
-        </>
-
+          <UpdatePassModal
+            isOpen={isModalOpen3}
+            onClose={closeUpdatePassModal}
+            onUpdated={onUpdated}
+            userId={id}
+            userEmail={user.email}
+          />
+        </div>
         <div className="flex flex-col gap-2">
           {user.account_status == 0 ? (
             <Chip
@@ -304,7 +296,7 @@ export default function Profile() {
         <div className="mt-10">
           {question.length > 0 ? (
             question.map((item, index) => (
-              <QuestionCard question={question} user_data={user} />
+              <QuestionCard question={item} user_data={user} />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center">
