@@ -6,7 +6,7 @@ import client from "../../configs/axios.config";
 import { userAgent } from "next/server";
 import AnswerRow from "./answer-row";
 import Editor from "../../components/editor";
-import { getCookie } from "cookies-next";
+import { getCookie, hasCookie } from "cookies-next";
 import { Alert, Button, Snackbar } from "@mui/material";
 import moment from "moment";
 
@@ -16,6 +16,7 @@ export default function QuestionDetail() {
   const [amountAnswer, setAmountAnswer] = useState(0)
 
   const [question, setQuestion] = useState({});
+  console.log(question)
   const [answers, setAnswers] = useState([]);
 
   const [editorLoaded, setEditorLoaded] = useState(false);
@@ -38,10 +39,14 @@ export default function QuestionDetail() {
       const res = await client.auth.get(
         `http://localhost:8009/api/get-question-by-id?question_id=${id}`
       );
-      const like = await client.main.get(
-        `http://localhost:8009/api/get-question-like-by-user-id?question_id=${id}&user_id=${getCookie("user_uuid")}`,
-      );
-      const data = { ...res.data.data, like: like.data.data };
+      let like = null
+      if (hasCookie("user_uuid")) {
+        const resLike = await client.main.get(
+          `http://localhost:8009/api/get-question-like-by-user-id?question_id=${id}&user_id=${getCookie("user_uuid")}`,
+        );
+        like = resLike.data.data
+      }
+      const data = { ...res.data.data, like };
       setQuestion(data);
     } catch (err) {
       console.log(err);
@@ -71,9 +76,9 @@ export default function QuestionDetail() {
         }
       );
       if (res.status == 201 || res.status == 200) {
-        let resAnswer = await getAnswer(id);
-        setAnswers(resAnswer)
+        await getAnswer();
         setContentSnackbar("Create answer success. Please check status of answer in your profile")
+        await sendNotification();
       } else {
         setContentSnackbar("Create answer failed")
       }
@@ -83,6 +88,16 @@ export default function QuestionDetail() {
       console.log(err);
       return null;
     }
+  }
+
+  async function sendNotification() {
+    const userSender = await client.main.get(`http://localhost:8006/api/get-user-by-id?user_id=${getCookie("user_uuid")}`);
+    const res = await client.main.post("http://localhost:8009/api/send-notification", {
+      user_id: question.user_data.data.id,
+      question_id: question.id,
+      content: `${userSender.data.data.full_name} have commented to your question`,
+      sender_id: getCookie("user_uuid")
+    });
   }
 
   async function createLikeQuestion(data) {
@@ -168,9 +183,8 @@ export default function QuestionDetail() {
             >
               {question.title}
             </a>
-            <p className="text-sm text-gray-500 font-medium hover:text-gray-700 mt-2">
-              {question.content}
-            </p>
+            <div dangerouslySetInnerHTML={{ __html: question.content }}>
+            </div>
             <div className="flex flex-wrap py-6 space-x-2">
               {/* <a
                 rel="noopener noreferrer"
@@ -252,7 +266,7 @@ export default function QuestionDetail() {
                       className="w-5 h-5 border rounded-full dark:bg-gray-500 dark:border-gray-700"
                     />
                     <p className="text-sm">
-                      {question.user_data.data.full_name} {" | "} {moment(question.user_data.data.created_date).format("MMMM Do YYYY, HH:mm:ss")}
+                      {question.user_data.data.full_name} {" | "} {moment(question.create_date).format("MMMM Do YYYY, HH:mm:ss")}
                     </p>
                   </div>
                 </div>

@@ -21,6 +21,7 @@ import { hasCookie, deleteCookie, getCookie } from "cookies-next";
 import { firebaseCloudMessaging } from "../../utils/firebase";
 import client from "../../configs/axios.config";
 import { ListItemText } from "@mui/material";
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 const pages = [
   { title: "Homepage", link: "/home" },
@@ -31,6 +32,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
   const [userUUID, setUserUUID] = React.useState();
+  const [unreadNoti, setUnreadNoti] = React.useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,23 +43,6 @@ function ResponsiveAppBar() {
       });
 
       getNotification();
-    }
-
-    async function getNotification() {
-      try {
-        // localhost:8009/api/get-user-notification?user_id=3775ef1a-bdde-4374-bb57-f0425a1ca48e
-        const res = await client.main.get(
-          `http://localhost:8009/api/get-user-notification?user_id=${getCookie(
-            "user_uuid"
-          )}`
-        );
-
-        const data = res.data.data;
-        setNotifications(data);
-        console.log("notifications", notifications);
-      } catch (err) {
-        console.log(err);
-      }
     }
 
     async function createDeviceToken(token, user_id) {
@@ -75,6 +60,28 @@ function ResponsiveAppBar() {
       }
     }
   }, []);
+
+  async function getNotification() {
+    try {
+      // localhost:8009/api/get-user-notification?user_id=3775ef1a-bdde-4374-bb57-f0425a1ca48e
+      const res = await client.main.get(
+        `http://localhost:8009/api/get-user-notification?user_id=${getCookie(
+          "user_uuid"
+        )}`
+      );
+
+      const data = res.data.data;
+      setNotifications(data);
+      let count = 0;
+      data.forEach((item) => {
+        if (!item.is_checked) count++
+      });
+      setUnreadNoti(count);
+      console.log("notifications", notifications);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   const handleLogout = async () => {
     await signOut();
@@ -210,7 +217,7 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNotification}
             >
-              <Badge color="error" badgeContent={notifications.number_of_noti}>
+              <Badge color="success" badgeContent={unreadNoti}>
                 <NotificationsIcon
                   style={{
                     color: Boolean(anchorElUNotification) ? "#82D200" : "#434343",
@@ -240,8 +247,14 @@ function ResponsiveAppBar() {
                 notifications.map((item) => (
                   <MenuItem
                     key={item}
-                    onClick={() => {
-                      setAnchorElUNotification(null);
+                    onClick={async () => {
+                      // setAnchorElUNotification(null);
+                      await client.main.post("http://localhost:8009/api/check-notification", {
+                        notification_id: item.id
+                      });
+                      getNotification();
+                      router.push(`/questions/${item.question_id}`)
+
                     }}
                   >
                     <div
@@ -255,7 +268,7 @@ function ResponsiveAppBar() {
                       />
                       <div
                         className="flex flex-col"
-                        style={{ maxWidth: "318px" }}
+                        style={{ maxWidth: "250px" }}
                       >
                         <div
                           style={{
@@ -269,6 +282,7 @@ function ResponsiveAppBar() {
                           {item.create_date}
                         </div>
                       </div>
+                      {!item.is_checked ? <FiberManualRecordIcon color="success" /> : <></>}
                     </div>
                   </MenuItem>
                 )) : <ListItemText className="p-3">You have no notifications.</ListItemText>}
