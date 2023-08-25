@@ -25,6 +25,7 @@ export default function Profile() {
 
   const [tag, setTag] = useState("question");
   const [question, setQuestion] = useState([]);
+  const [answer, setAnswer] = useState([]);
   const [user, setUser] = useState({});
 
   const [fullName, setFullName] = useState("");
@@ -66,6 +67,7 @@ export default function Profile() {
   useEffect(() => {
     getUser();
     getQuestion();
+    getAnswer();
   }, [id, isUpdate]);
 
   async function getUser() {
@@ -93,6 +95,18 @@ export default function Profile() {
       setQuestion(data);
 
       console.log("question", question);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getAnswer() {
+    try {
+      const res = await client.auth.get(
+        `http://localhost:8009/api/get-answer-by-user-id?user_id=${id}`
+      );
+      const data = await res.data.data;
+      setAnswer(data);
     } catch (err) {
       console.log(err);
     }
@@ -272,7 +286,7 @@ export default function Profile() {
             <span className="pr-1">Question</span>
             <p>({question.length})</p>
           </Button>
-          {/* <Button
+          <Button
             variant="outlined"
             style={{
               color: tag === "answer" ? "#FFFFFF" : "black",
@@ -290,20 +304,30 @@ export default function Profile() {
             }}
           >
             <span className="pr-1">Answer</span>
-            <p>({23})</p>
-          </Button> */}
+            <p>({answer.length})</p>
+          </Button>
         </div>
         <div className="mt-10">
-          {question.length > 0 ? (
-            question.map((item, index) => (
-              <QuestionCard question={item} user_data={user} />
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center">
-              <img src="/empty-state.png" className="w-1/2" />
-              <p className="text-2xl font-bold text-gray-500"> No question </p>
-            </div>
-          )}
+          {tag === "question" ?
+            question.length > 0 ? (
+              question.map((item, index) => (
+                <QuestionCard question={item} user_data={user} />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center">
+                <img src="/empty-state.png" className="w-1/2" />
+                <p className="text-2xl font-bold text-gray-500"> No question </p>
+              </div>
+            ) : tag === "answer" ? answer.length > 0 ? (
+              answer.map((item, index) => (
+                <QuestionCard question={item} user_data={user} />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center">
+                <img src="/empty-state.png" className="w-1/2" />
+                <p className="text-2xl font-bold text-gray-500"> No answer </p>
+              </div>
+            ) : <></>}
         </div>
       </div>
     </div>

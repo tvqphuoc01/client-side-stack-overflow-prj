@@ -4,6 +4,7 @@ import useAxios from "axios-hooks";
 import { useState } from "react";
 import client from "../../configs/axios.config";
 import { signIn, signOut } from "next-auth/react";
+import { CircularProgress } from "@mui/material";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -12,6 +13,7 @@ export default function SignUp() {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ export default function SignUp() {
       }, 5000);
     } else {
       try {
+        setLoading(true);
         const result = await client.auth.post(
           "http://localhost:8006/api/create-user",
           {
@@ -172,7 +175,7 @@ export default function SignUp() {
             className="w-full py-2 px-4 rounded-md text-white font-bold bg-green-400"
             type="submit"
           >
-            Sign up
+            {!loading ? "Sign up" : <CircularProgress color="inherit" />}
           </button>
         </form>
         <div className="flex items-center space-x-2">

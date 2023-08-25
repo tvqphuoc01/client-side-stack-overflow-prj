@@ -34,8 +34,8 @@ export default function QuestionList() {
     const res = await client.main.get("http://localhost:8009/api/get-list-tag");
     setTag(
       res.data.data.tags.map((item) => ({
-        id: item.tag_id,
-        name: item.tag_name,
+        id: item.id,
+        name: item.name,
       }))
     );
   }

@@ -81,17 +81,26 @@ export default function QuestionCard({ question, user_data }) {
         {question?.content?.substring(0, 200)} {" ..."}
       </p> */}
       <div dangerouslySetInnerHTML={{ __html: question?.content }}></div>
-      <div className="flex flex-wrap py-6 space-x-2">
+      <div className="flex flex-wrap pt-6 space-x-2">
+        {question?.tag_category &&
+          question?.tag_category.map((category, index) => (
+            <div
+              key={index}
+              className="px-3 py-1 rounded-xl bg-gray-300 text-gray-900"
+            >
+              {category}
+            </div>
+          ))}
+      </div>
+      <div className="flex flex-wrap pb-6 pt-2 space-x-2">
         {question?.tag_list &&
           question?.tag_list.map((tag, index) => (
-            <a
+            <div
               key={index}
-              rel="noopener noreferrer"
-              href="#"
-              className="px-3 py-1 rounded-xl hover:underline bg-gray-200 text-gray-900"
+              className="px-3 py-1 rounded-xl bg-gray-200 text-gray-900"
             >
               {tag}
-            </a>
+            </div>
           ))}
       </div>
       <div className="flex justify-between items-center my-4">
