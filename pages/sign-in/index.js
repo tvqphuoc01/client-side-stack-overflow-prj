@@ -54,6 +54,7 @@ export default function SignIn() {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    console.log("handleSignIn")
     try {
       const result = await client.auth.post(
         "http://localhost:8006/api/authenticate",
@@ -71,7 +72,7 @@ export default function SignIn() {
           setErrorMessage("User not found");
           break;
         case "User not verified":
-          setErrorMessage("Wrong password");
+          setErrorMessage("Please check your email to verify account");
           break;
         default:
           setErrorMessage("Something went wrong. Please try again later.");
@@ -81,41 +82,6 @@ export default function SignIn() {
         setErrorMessage("");
       }, 5000);
     }
-  };
-
-  async function getResetKey() {
-    try {
-      const res = await client.auth.get(
-        `http://localhost:8006/api/get-user-validation-code?user_email=${email}`
-      );
-      const data = await res.data;
-      console.log(data);
-      return data.validation_code;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  const handleForgotPassword = async (e) => {
-    e.preventDefault();
-    const resetKey = await getResetKey();
-
-    try {
-      const res = await client.auth.post(
-        "http://localhost:8006/api/reset-password",
-        {
-          email: email,
-          reset_key: resetKey,
-        }
-      );
-      console.log(res.data);
-      alert("The new password has been sent to the email: " + email);
-    } catch (err) {
-      setErrorMessage("Something went wrong. Please try again later.");
-    }
-    setTimeout(() => {
-      setErrorMessage("");
-    }, 5000);
   };
 
   return (
@@ -150,7 +116,7 @@ export default function SignIn() {
         </div>
       </div>
 
-      <div className="w-2/5 w-full max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
+      <div className="w-2/5 max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Stack Overflow</h1>
         <h2 className="text-3xl font-bold">Sign in to your account</h2>
         <button
@@ -194,12 +160,13 @@ export default function SignIn() {
               />
               <span className="text-base font-normal">Remember me</span>
             </label>
-            <button
-              className="text-green-500 text-base font-bold text-green-400"
-              onClick={handleForgotPassword}
+            <a
+              className="text-green-500 text-base font-bold"
+              href="/forgot-password"
+            // onClick={handleForgotPassword}
             >
               Forgot Password?
-            </button>
+            </a>
           </div>
           <button
             className="w-full py-2 px-4 rounded-md text-white font-bold bg-green-400"
@@ -211,7 +178,7 @@ export default function SignIn() {
         <div className="flex items-center space-x-2">
           <span className="text-base font-normal">Don't have an account?</span>
           <button
-            className="text-green-500 text-base font-bold text-green-400"
+            className="text-green-500 text-base font-bold"
             onClick={() => (window.location.href = "/sign-up")}
           >
             Sign up

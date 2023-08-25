@@ -40,7 +40,7 @@ export default function SignUp() {
         setTimeout(() => {
           setSuccessMessage("");
           window.location.href = "/sign-in";
-        }, 8000);
+        }, 1000);
         // redirect to sign in page
       } catch (error) {
         console.log("error", error.response.data.message);
@@ -115,7 +115,7 @@ export default function SignUp() {
         </div>
       </div>
 
-      <div className="w-2/5 w-full max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
+      <div className="w-2/5 max-w-md bg-white rounded-lg flex flex-col items-center space-y-5 py-12 px-6 z-10">
         <h1 className="text-4xl font-bold text-green-400">Stack Overflow</h1>
         <h2 className="text-3xl font-bold">Sign up to your account</h2>
         <button

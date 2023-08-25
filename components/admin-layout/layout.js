@@ -154,7 +154,7 @@ export default function Layout({ window, children }) {
                 </svg>
               </button>
               <div className="flex justify-left flex-1 lg:mr-32">
-                <h2 className="flex font-medium justify-left font-semibold text-gray-700 dark:text-gray-200">{asPath == '/admin/questions' ? 'Questions' :
+                <h2 className="flex font-medium justify-left text-gray-700 dark:text-gray-200">{asPath == '/admin/questions' ? 'Questions' :
                   asPath == '/admin/categories' ? 'Categories' : asPath == '/admin/tags' ? 'Tags' : asPath == '/admin/answers' ? 'Answers' : asPath == '/admin/replies' ? 'Replies' :
                     asPath == '/admin/users' ? 'Users' : 'Members'}</h2>
               </div>
